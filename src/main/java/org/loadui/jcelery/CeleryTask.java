@@ -1,6 +1,7 @@
 package org.loadui.jcelery;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -8,6 +9,8 @@ import org.json.simple.JSONValue;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class CeleryTask
 {
@@ -67,6 +70,9 @@ public class CeleryTask
 
 		private Builder(String task, String id)
 		{
+			checkNotNull( task );
+			checkNotNull( id );
+
 			this.task = task;
 			this.id = id;
 		}

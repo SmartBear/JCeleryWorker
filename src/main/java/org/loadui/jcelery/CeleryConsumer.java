@@ -13,6 +13,8 @@ public class CeleryConsumer extends AbstractExecutionThreadService
 {
 	private final static String QUEUE_NAME = "celery";
 
+	private String host = "localhost";
+
 	private TaskHandler onTask;
 
 	public void setTaskHandler( TaskHandler handler )
@@ -20,11 +22,16 @@ public class CeleryConsumer extends AbstractExecutionThreadService
 		this.onTask = handler;
 	}
 
+	public CeleryConsumer(String host)
+	{
+		this.host = host;
+	}
+
 	@Override
 	protected void run() throws Exception
 	{
 		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost("localhost");
+		factory.setHost(host);
 		Connection connection = factory.newConnection();
 		Channel channel = connection.createChannel();
 
