@@ -1,10 +1,8 @@
 package org.loadui.jcelery;
 
-import java.io.IOException;
-
 public class DemoApp
 {
-	public static void main(String[] _)	throws IOException, InterruptedException {
+	public static void main(String[] _)	throws Exception {
 
 		CeleryConsumer celeryConsumer = new CeleryConsumer();
 		celeryConsumer.setTaskHandler( new TaskHandler()
