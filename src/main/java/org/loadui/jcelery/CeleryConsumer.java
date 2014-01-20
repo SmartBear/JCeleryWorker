@@ -13,13 +13,18 @@ public class CeleryConsumer extends AbstractExecutionThreadService
 {
 	private final static String QUEUE_NAME = "celery";
 
-	private String host = "localhost";
+	private final String host;
 
 	private TaskHandler onTask;
 
 	public void setTaskHandler( TaskHandler handler )
 	{
 		this.onTask = handler;
+	}
+
+	public CeleryConsumer()
+	{
+		this("localhost");
 	}
 
 	public CeleryConsumer(String host)
