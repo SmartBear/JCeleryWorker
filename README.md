@@ -3,6 +3,9 @@ JCeleryWorker
 
 A simple [Celery][1] worker for the JVM.
 
+Currently only supports RabbitMQ and JSON.
+
+
 ## Usage
 ```java
 CeleryConsumer celeryConsumer = new CeleryConsumer();
