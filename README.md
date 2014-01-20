@@ -1,4 +1,4 @@
-JCelery
-=======
+JCeleryWorker
+=============
 
-A Celery client for the JVM
+A simple Celery worker for the JVM.
