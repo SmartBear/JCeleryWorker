@@ -13,6 +13,7 @@ celeryConsumer.setTaskHandler( new TaskHandler() {
 	@Override
 	public void handle(CeleryTask e) {
 		System.out.println("Received task: " + e);
+		e.complete(SUCCESS, "42");
 	}
 } );
 
