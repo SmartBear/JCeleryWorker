@@ -6,6 +6,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -21,16 +22,16 @@ public class CeleryTask
 	public final int retries;
 	public final Date eta;
 	public final Date expires;
+	public final CeleryService service;
 
-	public static CeleryTask fromJson(String json)
+	public static CeleryTask fromJson(String json, CeleryService service)
 	{
-
 		Object o = JSONValue.parse( json );
 		JSONObject jsonObject = ( JSONObject )o;
 
 		String task = ( String )jsonObject.get( "task" );
 		String id = ( String )jsonObject.get( "id" );
-		Builder builder = new Builder(task, id);
+		Builder builder = new Builder(task, id, service);
 
 		builder.args = ( JSONArray )jsonObject.get( "args" );
 		builder.kwargs = ( JSONObject )jsonObject.get( "kwargs" );
@@ -38,15 +39,31 @@ public class CeleryTask
 		return builder.build();
 	}
 
-	private CeleryTask( String task, String id, List<?> args, Map<String, Object> kwargs, int retries, Date eta, Date expires )
+	private CeleryTask( Builder b )
 	{
-		this.task = task;
-		this.id = id;
-		this.args = args;
-		this.kwargs = kwargs;
-		this.retries = retries;
-		this.eta = eta;
-		this.expires = expires;
+		this.task = b.task;
+		this.id = b.id;
+		this.args = b.args;
+		this.kwargs = b.kwargs;
+		this.retries = b.retries;
+		this.eta = b.eta;
+		this.expires = b.expires;
+		this.service = b.service;
+	}
+
+	public void complete(Status status) throws IOException
+	{
+		complete( status, "" );
+	}
+
+	public void complete(Status status, String result) throws IOException
+	{
+		JSONObject obj = new JSONObject();
+		obj.put( "task_id", id );
+		obj.put( "status", status.toString() );
+		obj.put( "result", result );
+
+		service.respond( id, obj.toJSONString() );
 	}
 
 	public String toString()
@@ -67,19 +84,22 @@ public class CeleryTask
 		int retries;
 		Date eta;
 		Date expires;
+		CeleryService service;
 
-		private Builder(String task, String id)
+		private Builder(String task, String id, CeleryService service)
 		{
 			checkNotNull( task );
 			checkNotNull( id );
+			checkNotNull( service );
 
 			this.task = task;
 			this.id = id;
+			this.service = service;
 		}
 
 		CeleryTask build()
 		{
-			return new CeleryTask(task, id, args, kwargs, retries, eta, expires);
+			return new CeleryTask(this);
 		}
 	}
 }

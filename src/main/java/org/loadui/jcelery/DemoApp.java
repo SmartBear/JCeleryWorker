@@ -1,26 +1,31 @@
 package org.loadui.jcelery;
 
+import java.io.IOException;
+
+import static org.loadui.jcelery.Status.SUCCESS;
+
 public class DemoApp
 {
 	public static void main(String[] _)	throws Exception {
 
-		CeleryConsumer celeryConsumer = new CeleryConsumer();
-		celeryConsumer.setTaskHandler( new TaskHandler()
+		CeleryService celeryService = new CeleryService();
+		celeryService.setTaskHandler( new TaskHandler()
 		{
 			@Override
-			public void handle( CeleryTask e )
+			public void handle( CeleryTask e ) throws IOException
 			{
-				System.out.println("Received task: " + e);
+				System.out.println( "Received task: " + e );
+				e.complete( SUCCESS, "42" );
 			}
 		} );
 
-		celeryConsumer.startAsync();
-		celeryConsumer.awaitRunning();
+		celeryService.startAsync();
+		celeryService.awaitRunning();
 
-		Thread.sleep( 10000 );
+		Thread.sleep( 300000 );
 
-		celeryConsumer.stopAsync();
-		celeryConsumer.awaitTerminated();
+		celeryService.stopAsync();
+		celeryService.awaitTerminated();
 	}
 
 }
