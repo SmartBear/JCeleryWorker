@@ -2,10 +2,7 @@ package org.loadui.jcelery;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.QueueingConsumer;
+import com.rabbitmq.client.*;
 
 import java.io.IOException;
 
@@ -42,7 +39,9 @@ public class CeleryService extends AbstractExecutionThreadService
 		responseChannel.queueDeclare( RESPONSE_QUEUE, true, false, true, ImmutableMap.of("x-expires", (Object) 86400000) );
 		responseChannel.queueBind( RESPONSE_QUEUE, "celeryresults", RESPONSE_QUEUE );
 
-		channel.basicPublish( "celeryresults", RESPONSE_QUEUE, null, response.getBytes() );
+		AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
+
+		channel.basicPublish( "celeryresults", RESPONSE_QUEUE, props, response.getBytes() );
 		System.out.println( "Responded to task: " + response );
 	}
 

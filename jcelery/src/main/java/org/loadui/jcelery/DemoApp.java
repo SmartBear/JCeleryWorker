@@ -12,10 +12,12 @@ public class DemoApp
 		celeryService.setTaskHandler( new TaskHandler()
 		{
 			@Override
-			public void handle( CeleryTask e ) throws IOException
+			public void handle( CeleryTask t ) throws IOException
 			{
-				System.out.println( "Received task: " + e );
-				e.complete( SUCCESS, 42 );
+				switch( t.task )
+				{
+					case "tasks.add": t.complete( SUCCESS, add(t) );
+				}
 			}
 		} );
 
@@ -26,6 +28,13 @@ public class DemoApp
 
 		celeryService.stopAsync();
 		celeryService.awaitTerminated();
+	}
+
+	private static long add(CeleryTask t)
+	{
+		long x = (long) t.args.get( 0 );
+		long y = (long) t.args.get( 1 );
+		return x + y;
 	}
 
 }

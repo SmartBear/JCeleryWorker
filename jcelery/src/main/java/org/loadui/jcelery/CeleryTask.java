@@ -18,7 +18,7 @@ public class CeleryTask
 {
 	public final String task;
 	public final String id;
-	public final List<?> args;
+	public final List args;
 	public final Map<String, Object> kwargs;
 	public final int retries;
 	public final Date eta;
