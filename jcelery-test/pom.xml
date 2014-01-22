@@ -10,14 +10,14 @@
         <version>0.1.0</version>
     </parent>
 
-    <artifactId>jcelery-test</artifactId>
-    <name>JCelery Tests</name>
-    <description>This is a module that tests jCelery</description>
+    <artifactId>jCeleryWorker-test</artifactId>
+    <name>JCeleryWorker Tests</name>
+    <description>This is a module that tests JCeleryWorker</description>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>jcelery</artifactId>
+            <artifactId>jCeleryWorker</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

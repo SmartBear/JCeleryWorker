@@ -6,7 +6,7 @@
 
     <groupId>org.loadui</groupId>
     <artifactId>jcelery-parent</artifactId>
-    <name>JCelery Parent</name>
+    <name>JCeleryWorker Parent</name>
     <description>This is a Java library to allow JVM code to use Celery directly</description>
     <version>0.1.0</version>
     <packaging>pom</packaging>

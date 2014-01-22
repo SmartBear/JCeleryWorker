@@ -24,7 +24,7 @@ public class DemoApp
 		celeryService.startAsync();
 		celeryService.awaitRunning();
 
-		Thread.sleep( 300000 );
+		Thread.sleep( 300_000 );
 
 		celeryService.stopAsync();
 		celeryService.awaitTerminated();
