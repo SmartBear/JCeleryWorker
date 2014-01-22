@@ -15,7 +15,7 @@ public class DemoApp
 			public void handle( CeleryTask e ) throws IOException
 			{
 				System.out.println( "Received task: " + e );
-				e.complete( SUCCESS, "42" );
+				e.complete( SUCCESS, 42 );
 			}
 		} );
 

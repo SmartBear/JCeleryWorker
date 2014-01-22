@@ -1,5 +1,6 @@
 package org.loadui.jcelery;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Connection;
@@ -15,6 +16,7 @@ public class CeleryService extends AbstractExecutionThreadService
 	private final String host;
 
 	private TaskHandler onTask;
+	private Connection connection;
 	private Channel channel;
 
 	public void setTaskHandler( TaskHandler handler )
@@ -34,8 +36,14 @@ public class CeleryService extends AbstractExecutionThreadService
 
 	void respond(String id, String response) throws IOException
 	{
-		channel.basicPublish("", id, null, response.getBytes());
-		System.out.println("Responded to task: " + response);
+		Channel responseChannel = connection.createChannel();
+
+		String RESPONSE_QUEUE = id.replace( "-", "" );
+		responseChannel.queueDeclare( RESPONSE_QUEUE, true, false, true, ImmutableMap.of("x-expires", (Object) 86400000) );
+		responseChannel.queueBind( RESPONSE_QUEUE, "celeryresults", RESPONSE_QUEUE );
+
+		channel.basicPublish( "celeryresults", RESPONSE_QUEUE, null, response.getBytes() );
+		System.out.println( "Responded to task: " + response );
 	}
 
 	@Override
@@ -43,11 +51,11 @@ public class CeleryService extends AbstractExecutionThreadService
 	{
 		ConnectionFactory factory = new ConnectionFactory();
 		factory.setHost(host);
-		Connection connection = factory.newConnection();
+		connection = factory.newConnection();
 		channel = connection.createChannel();
 
 		channel.queueDeclare( QUEUE_NAME, true, false, false, null );
-		System.out.println("Waiting for tasks from host "+connection.getAddress() + ".");
+		System.out.println( "Waiting for tasks from host " + connection.getAddress() + "." );
 
 		QueueingConsumer consumer = new QueueingConsumer( channel );
 		channel.basicConsume( QUEUE_NAME, true, consumer );
@@ -56,7 +64,8 @@ public class CeleryService extends AbstractExecutionThreadService
 			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 			String message = new String(delivery.getBody());
 
-			System.out.println("Input: "+ message);
+			System.out.println(delivery.getEnvelope().getRoutingKey()+" @ " + delivery.getEnvelope().getExchange() + " @ " + delivery.getEnvelope().getDeliveryTag()+ " @ "+ message);
+
 
 			CeleryTask task = CeleryTask.fromJson( message, this );
 
@@ -64,6 +73,7 @@ public class CeleryService extends AbstractExecutionThreadService
 			{
 				onTask.handle( task ); // This is blocking!
 			}
+
 		}
 	}
 

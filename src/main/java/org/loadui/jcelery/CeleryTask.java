@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -56,12 +57,15 @@ public class CeleryTask
 		complete( status, "" );
 	}
 
-	public void complete(Status status, String result) throws IOException
+	public void complete(Status status, Object result) throws IOException
 	{
 		JSONObject obj = new JSONObject();
 		obj.put( "task_id", id );
 		obj.put( "status", status.toString() );
 		obj.put( "result", result );
+
+		obj.put( "traceback", null );
+		obj.put( "children", new ArrayList() );
 
 		service.respond( id, obj.toJSONString() );
 	}
