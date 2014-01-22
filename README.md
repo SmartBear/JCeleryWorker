@@ -15,11 +15,10 @@ public class DemoApp
 		CeleryService celeryService = new CeleryService();
 		celeryService.setTaskHandler( new TaskHandler() {
 			@Override
-			public void handle( CeleryTask t ) throws IOException
+			public void handle(CeleryTask t) throws IOException
 			{
-				switch( t.task )
-				{
-					case "tasks.add": t.complete( SUCCESS, add(t) );
+				switch(t.task) {
+					case "tasks.add": t.complete(SUCCESS, add(t));
 				}
 			}
 		} );
@@ -27,18 +26,17 @@ public class DemoApp
 		celeryService.startAsync();
 		celeryService.awaitRunning();
 
-		Thread.sleep( 300000 );
+		Thread.sleep(300_000);
 
 		celeryService.stopAsync();
 		celeryService.awaitTerminated();
 	}
 
 	private static long add(CeleryTask t) {
-		long x = (long) t.args.get( 0 );
-		long y = (long) t.args.get( 1 );
+		long x = (long) t.args.get(0);
+		long y = (long) t.args.get(1);
 		return x + y;
 	}
-
 }
 
 ```
