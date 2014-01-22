@@ -7,6 +7,8 @@ Currently only supports RabbitMQ and JSON.
 
 
 ## Usage
+This replaces the worker from the [First Steps with Celery][2] tutoral:
+
 ```java
 public class DemoApp {
 	public static void main(String[] _) throws Exception {
@@ -41,3 +43,4 @@ public class DemoApp {
 ```
 
 [1]: http://www.celeryproject.org/
+[2]: http://docs.celeryproject.org/en/latest/getting-started/first-steps-with-celery.html#application
