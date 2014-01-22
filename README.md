@@ -13,7 +13,7 @@ This replaces the worker from the [First Steps with Celery][2] tutoral:
 public class DemoApp {
 	public static void main(String[] _) throws Exception {
 
-		CeleryService celeryService = new CeleryService();
+		CeleryService celeryService = new CeleryService("localhost");
 		celeryService.setTaskHandler( new TaskHandler() {
 			@Override
 			public void handle(CeleryTask t) throws IOException
