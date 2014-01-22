@@ -8,8 +8,7 @@ Currently only supports RabbitMQ and JSON.
 
 ## Usage
 ```java
-public class DemoApp
-{
+public class DemoApp {
 	public static void main(String[] _) throws Exception {
 
 		CeleryService celeryService = new CeleryService();
