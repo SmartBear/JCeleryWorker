@@ -12,7 +12,6 @@ This replaces the worker from the [First Steps with Celery][2] tutoral:
 ```java
 public class DemoApp {
 	public static void main(String[] _) throws Exception {
-
 		CeleryService celeryService = new CeleryService("localhost");
 		celeryService.setTaskHandler( new TaskHandler() {
 			@Override
@@ -25,12 +24,8 @@ public class DemoApp {
 		} );
 
 		celeryService.startAsync();
-		celeryService.awaitRunning();
 
-		Thread.sleep(300000);
-
-		celeryService.stopAsync();
-		celeryService.awaitTerminated();
+		// ...
 	}
 
 	private static long add(CeleryTask t) {
