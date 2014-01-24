@@ -15,8 +15,7 @@ public class DemoApp {
 		CeleryService celeryService = new CeleryService("localhost");
 		celeryService.setTaskHandler( new TaskHandler() {
 			@Override
-			public void handle(CeleryTask t) throws IOException
-			{
+			public void handle(CeleryTask t) {
 				switch(t.task) {
 					case "tasks.add": t.complete(SUCCESS, add(t));
 				}
