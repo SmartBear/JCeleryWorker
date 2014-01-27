@@ -1,14 +1,12 @@
 package org.loadui.jcelery;
 
-import java.io.IOException;
-
 /**
  * @author renato
  */
 public interface JobService
 {
 
-	void setTaskHandler( TaskHandler handler );
+	void setTaskHandler( TaskHandler<?> handler );
 
 	JobService 	startAsynchronous();
 
@@ -19,7 +17,5 @@ public interface JobService
 	JobService waitUntilTerminated();
 
 	boolean isRunning();
-
-	void respond(String id, String response) throws IOException;
 
 }

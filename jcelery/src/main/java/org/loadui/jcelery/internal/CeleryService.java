@@ -3,7 +3,6 @@ package org.loadui.jcelery.internal;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.rabbitmq.client.*;
-import org.loadui.jcelery.CeleryTask;
 import org.loadui.jcelery.JobService;
 import org.loadui.jcelery.Status;
 import org.loadui.jcelery.TaskHandler;
@@ -36,7 +35,6 @@ public class CeleryService extends AbstractExecutionThreadService implements Job
 		this.host = host;
 	}
 
-	@Override
 	public void respond(String id, String response) throws IOException
 	{
 		Channel responseChannel = connection.createChannel();

@@ -1,9 +1,9 @@
 package org.loadui.jcelery.demo;
 
 import org.loadui.jcelery.JobService;
-import org.loadui.jcelery.internal.CeleryService;
-import org.loadui.jcelery.CeleryTask;
 import org.loadui.jcelery.TaskHandler;
+import org.loadui.jcelery.internal.CeleryService;
+import org.loadui.jcelery.internal.CeleryTask;
 
 import java.io.IOException;
 
@@ -14,7 +14,7 @@ public class DemoApp
 	public static void main(String[] _)	throws Exception {
 
 		JobService celeryService = new CeleryService();
-		celeryService.setTaskHandler( new TaskHandler()
+		celeryService.setTaskHandler( new TaskHandler<CeleryTask>()
 		{
 			@Override
 			public void handle( CeleryTask t ) throws IOException

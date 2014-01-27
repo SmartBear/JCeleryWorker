@@ -2,7 +2,7 @@ package org.loadui.jcelery;
 
 import java.util.EventListener;
 
-public interface TaskHandler extends EventListener
+public interface TaskHandler<T extends Task> extends EventListener
 {
-	void handle(CeleryTask e) throws Exception;
+	void handle( T t ) throws Exception;
 }

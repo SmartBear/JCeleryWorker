@@ -1,9 +1,11 @@
-package org.loadui.jcelery;
+package org.loadui.jcelery.internal;
 
 import com.google.common.base.Objects;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.loadui.jcelery.Status;
+import org.loadui.jcelery.Task;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,25 +15,25 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class CeleryTask
+public class CeleryTask implements Task
 {
 	public final String task;
 	public final String id;
 	public final List args;
-	public final Map<String, Object> kwargs;
+	public final Map<Object, Object> kwargs;
 	public final int retries;
 	public final Date eta;
 	public final Date expires;
-	public final JobService service;
+	public final CeleryService service;
 
-	public static CeleryTask fromJson(String json, JobService service)
+	public static CeleryTask fromJson( String json, CeleryService service )
 	{
 		Object o = JSONValue.parse( json );
 		JSONObject jsonObject = ( JSONObject )o;
 
 		String task = ( String )jsonObject.get( "task" );
 		String id = ( String )jsonObject.get( "id" );
-		Builder builder = new Builder(task, id, service);
+		Builder builder = new Builder( task, id, service );
 
 		builder.args = ( JSONArray )jsonObject.get( "args" );
 		builder.kwargs = ( JSONObject )jsonObject.get( "kwargs" );
@@ -51,12 +53,12 @@ public class CeleryTask
 		this.service = b.service;
 	}
 
-	public void complete(Status status) throws IOException
+	public void complete( Status status ) throws IOException
 	{
 		complete( status, "" );
 	}
 
-	public void complete(Status status, Object result) throws IOException
+	public void complete( Status status, Object result ) throws IOException
 	{
 		JSONObject obj = new JSONObject();
 		obj.put( "task_id", id );
@@ -71,7 +73,7 @@ public class CeleryTask
 
 	public String toString()
 	{
-		return Objects.toStringHelper(this)
+		return Objects.toStringHelper( this )
 				.add( "task", task )
 				.add( "id", id )
 				.add( "args", args )
@@ -83,13 +85,13 @@ public class CeleryTask
 		String task;
 		String id;
 		List<?> args;
-		Map<String, Object> kwargs;
+		Map<Object, Object> kwargs;
 		int retries;
 		Date eta;
 		Date expires;
-		JobService service;
+		CeleryService service;
 
-		private Builder(String task, String id, JobService service)
+		private Builder( String task, String id, CeleryService service )
 		{
 			checkNotNull( task );
 			checkNotNull( id );
@@ -102,7 +104,7 @@ public class CeleryTask
 
 		CeleryTask build()
 		{
-			return new CeleryTask(this);
+			return new CeleryTask( this );
 		}
 	}
 }
