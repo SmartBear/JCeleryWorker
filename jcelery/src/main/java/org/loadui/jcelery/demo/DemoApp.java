@@ -1,4 +1,9 @@
-package org.loadui.jcelery;
+package org.loadui.jcelery.demo;
+
+import org.loadui.jcelery.JobService;
+import org.loadui.jcelery.internal.CeleryService;
+import org.loadui.jcelery.CeleryTask;
+import org.loadui.jcelery.TaskHandler;
 
 import java.io.IOException;
 
@@ -8,7 +13,7 @@ public class DemoApp
 {
 	public static void main(String[] _)	throws Exception {
 
-		CeleryService celeryService = new CeleryService();
+		JobService celeryService = new CeleryService();
 		celeryService.setTaskHandler( new TaskHandler()
 		{
 			@Override
@@ -21,13 +26,13 @@ public class DemoApp
 			}
 		} );
 
-		celeryService.startAsync();
-		celeryService.awaitRunning();
+		celeryService.startAsynchronous();
+		celeryService.waitUntilRunning();
 
 		Thread.sleep( 300_000 );
 
-		celeryService.stopAsync();
-		celeryService.awaitTerminated();
+		celeryService.stopAsynchronous();
+		celeryService.waitUntilTerminated();
 	}
 
 	private static long add(CeleryTask t)

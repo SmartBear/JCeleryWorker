@@ -1,7 +1,6 @@
 package org.loadui.jcelery;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -23,9 +22,9 @@ public class CeleryTask
 	public final int retries;
 	public final Date eta;
 	public final Date expires;
-	public final CeleryService service;
+	public final JobService service;
 
-	public static CeleryTask fromJson(String json, CeleryService service)
+	public static CeleryTask fromJson(String json, JobService service)
 	{
 		Object o = JSONValue.parse( json );
 		JSONObject jsonObject = ( JSONObject )o;
@@ -88,9 +87,9 @@ public class CeleryTask
 		int retries;
 		Date eta;
 		Date expires;
-		CeleryService service;
+		JobService service;
 
-		private Builder(String task, String id, CeleryService service)
+		private Builder(String task, String id, JobService service)
 		{
 			checkNotNull( task );
 			checkNotNull( id );

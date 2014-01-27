@@ -1,21 +1,26 @@
-package org.loadui.jcelery;
+package org.loadui.jcelery.internal;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.rabbitmq.client.*;
+import org.loadui.jcelery.CeleryTask;
+import org.loadui.jcelery.JobService;
+import org.loadui.jcelery.Status;
+import org.loadui.jcelery.TaskHandler;
 
 import java.io.IOException;
 
-public class CeleryService extends AbstractExecutionThreadService
+public class CeleryService extends AbstractExecutionThreadService implements JobService
 {
 	private final static String QUEUE_NAME = "celery";
 
 	private final String host;
-
+	private Status status = Status.PENDING;
 	private TaskHandler onTask;
 	private Connection connection;
 	private Channel channel;
 
+	@Override
 	public void setTaskHandler( TaskHandler handler )
 	{
 		this.onTask = handler;
@@ -31,7 +36,8 @@ public class CeleryService extends AbstractExecutionThreadService
 		this.host = host;
 	}
 
-	void respond(String id, String response) throws IOException
+	@Override
+	public void respond(String id, String response) throws IOException
 	{
 		Channel responseChannel = connection.createChannel();
 
@@ -74,6 +80,30 @@ public class CeleryService extends AbstractExecutionThreadService
 			}
 
 		}
+	}
+
+	@Override
+	public CeleryService startAsynchronous() {
+		startAsync();
+		return this;
+	}
+
+	@Override
+	public CeleryService waitUntilRunning() {
+		awaitRunning();
+		return this;
+	}
+
+	@Override
+	public CeleryService stopAsynchronous() {
+		stopAsync();
+		return this;
+	}
+
+	@Override
+	public CeleryService waitUntilTerminated() {
+		awaitTerminated();
+		return this;
 	}
 
 }

@@ -1,6 +1,5 @@
 package org.loadui.jcelery;
 
-import com.google.common.util.concurrent.Service;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -31,7 +30,7 @@ public class JCeleryServiceTest
 	BundleContext context;
 
 	@Inject
-	CeleryService celeryService;
+	JobService celeryService;
 
 	@Configuration
 	public Option[] config()
@@ -47,8 +46,8 @@ public class JCeleryServiceTest
 						"sun.misc" ),
 				springDmBundles(),
 				junitBundles(),
-				mavenBundle( "com.google.guava", "guava", "16.0" ),
-				mavenBundle( "org.loadui", "jcelery", "0.1.0" )
+				mavenBundle( "com.google.guava", "guava" ).versionAsInProject(),
+				mavenBundle( "org.loadui", "jcelery" ).versionAsInProject()
 		);
 	}
 
@@ -62,7 +61,7 @@ public class JCeleryServiceTest
 	public void celeryServiceIsExposed()
 	{
 		assertThat( celeryService, notNullValue() );
-		assertThat( celeryService.state(), is( Service.State.NEW ) );
+		assertThat( celeryService.isRunning(), is( false ) );
 	}
 
 }

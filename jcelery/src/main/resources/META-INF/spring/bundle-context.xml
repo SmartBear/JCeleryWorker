@@ -7,7 +7,7 @@
         <constructor-arg value="localhost" />
     </bean>
 
-    <bean id="celeryService" class="org.loadui.jcelery.CeleryService">
+    <bean id="celeryService" class="org.loadui.jcelery.internal.CeleryService">
         <constructor-arg ref="mq-host" />
     </bean>
 
