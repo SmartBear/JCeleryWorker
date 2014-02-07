@@ -8,7 +8,7 @@
     <artifactId>jcelery-parent</artifactId>
     <name>JCeleryWorker Parent</name>
     <description>This is a Java library to allow JVM code to use Celery directly</description>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
     <packaging>pom</packaging>
 
     <modules>
