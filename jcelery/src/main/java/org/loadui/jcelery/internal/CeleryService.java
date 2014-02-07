@@ -13,7 +13,6 @@ public class CeleryService extends AbstractExecutionThreadService implements Job
 {
 	private final static String QUEUE_NAME = "celery";
 
-	private final String host;
 	private Status status = Status.PENDING;
 	private TaskHandler onTask;
 	private Connection connection;
@@ -25,15 +24,20 @@ public class CeleryService extends AbstractExecutionThreadService implements Job
 		this.onTask = handler;
 	}
 
-	public CeleryService()
-	{
+	public CeleryService() throws IOException {
 		this( "localhost" );
 	}
 
-	public CeleryService( String host )
-	{
-		this.host = host;
+	public CeleryService( String host ) throws IOException {
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost(host);
+        connection = factory.newConnection();
 	}
+
+    public CeleryService( Connection connection )
+    {
+        this.connection = connection;
+    }
 
 	public void respond(String id, String response) throws IOException
 	{
@@ -52,9 +56,6 @@ public class CeleryService extends AbstractExecutionThreadService implements Job
 	@Override
 	protected void run() throws Exception
 	{
-		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost(host);
-		connection = factory.newConnection();
 		channel = connection.createChannel();
 
 		channel.queueDeclare( QUEUE_NAME, true, false, false, null );
