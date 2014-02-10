@@ -14,6 +14,7 @@ public class CeleryService extends AbstractExecutionThreadService implements Job
 	private final static String QUEUE_NAME = "celery";
 
 	private Status status = Status.PENDING;
+	private String host;
 	private TaskHandler onTask;
 	private Connection connection;
 	private Channel channel;
@@ -24,27 +25,37 @@ public class CeleryService extends AbstractExecutionThreadService implements Job
 		this.onTask = handler;
 	}
 
-	public CeleryService() throws IOException {
+	public CeleryService() throws IOException
+	{
 		this( "localhost" );
 	}
 
-	public CeleryService( String host ) throws IOException {
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(host);
-        connection = factory.newConnection();
+	public CeleryService( String host )
+	{
+		this.host = host;
 	}
 
-    public CeleryService( Connection connection )
-    {
-        this.connection = connection;
-    }
+	public CeleryService( Connection connection )
+	{
+		this.connection = connection;
+	}
 
-	public void respond(String id, String response) throws IOException
+	private void createConnectionIfRequired() throws IOException
+	{
+		if( connection == null && host != null )
+		{
+			ConnectionFactory factory = new ConnectionFactory();
+			factory.setHost( host );
+			connection = factory.newConnection();
+		}
+	}
+
+	public void respond( String id, String response ) throws IOException
 	{
 		Channel responseChannel = connection.createChannel();
 
 		String RESPONSE_QUEUE = id.replace( "-", "" );
-		responseChannel.queueDeclare( RESPONSE_QUEUE, true, false, true, ImmutableMap.of("x-expires", (Object) 86400000) );
+		responseChannel.queueDeclare( RESPONSE_QUEUE, true, false, true, ImmutableMap.of( "x-expires", ( Object )86400000 ) );
 		responseChannel.queueBind( RESPONSE_QUEUE, "celeryresults", RESPONSE_QUEUE );
 
 		AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
@@ -56,6 +67,7 @@ public class CeleryService extends AbstractExecutionThreadService implements Job
 	@Override
 	protected void run() throws Exception
 	{
+		createConnectionIfRequired();
 		channel = connection.createChannel();
 
 		channel.queueDeclare( QUEUE_NAME, true, false, false, null );
@@ -64,16 +76,17 @@ public class CeleryService extends AbstractExecutionThreadService implements Job
 		QueueingConsumer consumer = new QueueingConsumer( channel );
 		channel.basicConsume( QUEUE_NAME, true, consumer );
 
-		while (isRunning()) {
+		while( isRunning() )
+		{
 			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-			String message = new String(delivery.getBody());
+			String message = new String( delivery.getBody() );
 
-			System.out.println(delivery.getEnvelope().getRoutingKey()+" @ " + delivery.getEnvelope().getExchange() + " @ " + delivery.getEnvelope().getDeliveryTag()+ " @ "+ message);
+			System.out.println( delivery.getEnvelope().getRoutingKey() + " @ " + delivery.getEnvelope().getExchange() + " @ " + delivery.getEnvelope().getDeliveryTag() + " @ " + message );
 
 
 			CeleryTask task = CeleryTask.fromJson( message, this );
 
-			if(onTask != null)
+			if( onTask != null )
 			{
 				onTask.handle( task ); // This is blocking!
 			}
@@ -82,25 +95,29 @@ public class CeleryService extends AbstractExecutionThreadService implements Job
 	}
 
 	@Override
-	public CeleryService startAsynchronous() {
+	public CeleryService startAsynchronous()
+	{
 		startAsync();
 		return this;
 	}
 
 	@Override
-	public CeleryService waitUntilRunning() {
+	public CeleryService waitUntilRunning()
+	{
 		awaitRunning();
 		return this;
 	}
 
 	@Override
-	public CeleryService stopAsynchronous() {
+	public CeleryService stopAsynchronous()
+	{
 		stopAsync();
 		return this;
 	}
 
 	@Override
-	public CeleryService waitUntilTerminated() {
+	public CeleryService waitUntilTerminated()
+	{
 		awaitTerminated();
 		return this;
 	}
