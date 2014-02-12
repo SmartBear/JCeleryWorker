@@ -1,6 +1,8 @@
 package org.loadui.jcelery.internal;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -17,14 +19,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class CeleryTask implements Task
 {
-	public final String task;
-	public final String id;
-	public final List args;
-	public final Map<Object, Object> kwargs;
-	public final int retries;
-	public final Date eta;
-	public final Date expires;
-	public final CeleryService service;
+	private final String task;
+	private final String id;
+	private final List<Object> args;
+	private final Map<Object, Object> kwargs;
+	private final int retries;
+	private final Date eta;
+	private final Date expires;
+	private final CeleryService service;
 
 	public static CeleryTask fromJson( String json, CeleryService service )
 	{
@@ -53,11 +55,13 @@ public class CeleryTask implements Task
 		this.service = b.service;
 	}
 
+	@Override
 	public void complete( Status status ) throws IOException
 	{
 		complete( status, "" );
 	}
 
+	@Override
 	public void complete( Status status, Object result ) throws IOException
 	{
 		JSONObject obj = new JSONObject();
@@ -71,6 +75,7 @@ public class CeleryTask implements Task
 		service.respond( id, obj.toJSONString() );
 	}
 
+	@Override
 	public String toString()
 	{
 		return Objects.toStringHelper( this )
@@ -80,11 +85,51 @@ public class CeleryTask implements Task
 				.add( "kwargs", kwargs ).toString();
 	}
 
+	public String getTask()
+	{
+		return task;
+	}
+
+	public String getId()
+	{
+		return id;
+	}
+
+	public List getArgs()
+	{
+		return Lists.newArrayList( args );
+	}
+
+	public Map<Object, Object> getKwargs()
+	{
+		return ImmutableMap.copyOf( kwargs );
+	}
+
+	public int getRetries()
+	{
+		return retries;
+	}
+
+	public Date getEta()
+	{
+		return eta;
+	}
+
+	public Date getExpires()
+	{
+		return expires;
+	}
+
+	public CeleryService getService()
+	{
+		return service;
+	}
+
 	static class Builder
 	{
 		String task;
 		String id;
-		List<?> args;
+		List<Object> args;
 		Map<Object, Object> kwargs;
 		int retries;
 		Date eta;

@@ -6,6 +6,7 @@ import org.loadui.jcelery.internal.CeleryService;
 import org.loadui.jcelery.internal.CeleryTask;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.loadui.jcelery.Status.SUCCESS;
 
@@ -19,7 +20,7 @@ public class DemoApp
 			@Override
 			public void handle( CeleryTask t ) throws IOException
 			{
-				switch( t.task )
+				switch( t.getTask() )
 				{
 					case "tasks.add": t.complete( SUCCESS, add(t) );
 				}
@@ -37,8 +38,9 @@ public class DemoApp
 
 	private static long add(CeleryTask t)
 	{
-		long x = (long) t.args.get( 0 );
-		long y = (long) t.args.get( 1 );
+		List<Object> args = t.getArgs();
+		long x = (long) args.get( 0 );
+		long y = (long) args.get( 1 );
 		return x + y;
 	}
 
