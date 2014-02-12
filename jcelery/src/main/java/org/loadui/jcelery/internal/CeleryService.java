@@ -94,32 +94,4 @@ public class CeleryService extends AbstractExecutionThreadService implements Job
 		}
 	}
 
-	@Override
-	public CeleryService startAsynchronous()
-	{
-		startAsync();
-		return this;
-	}
-
-	@Override
-	public CeleryService waitUntilRunning()
-	{
-		awaitRunning();
-		return this;
-	}
-
-	@Override
-	public CeleryService stopAsynchronous()
-	{
-		stopAsync();
-		return this;
-	}
-
-	@Override
-	public CeleryService waitUntilTerminated()
-	{
-		awaitTerminated();
-		return this;
-	}
-
 }
