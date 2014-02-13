@@ -27,13 +27,13 @@ public class DemoApp
 			}
 		} );
 
-		celeryService.startAsync();
-		celeryService.awaitRunning();
+		celeryService.startAsynchronous();
+		celeryService.waitUntilRunning();
 
 		Thread.sleep( 300_000 );
 
-		celeryService.stopAsync();
-		celeryService.awaitTerminated();
+		celeryService.stopAsynchronous();
+		celeryService.waitUntilTerminated();
 	}
 
 	private static long add(CeleryTask t)

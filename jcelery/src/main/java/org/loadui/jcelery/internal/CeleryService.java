@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class CeleryService extends AbstractExecutionThreadService implements JobService
 {
-	private final static String QUEUE_NAME = "celery";
+	private final static String EXCHANGE_NAME = "celery";
 
 	private Status status = Status.PENDING;
 	private String host;
@@ -28,11 +28,13 @@ public class CeleryService extends AbstractExecutionThreadService implements Job
 	public CeleryService() throws IOException
 	{
 		this( "localhost" );
+
 	}
 
 	public CeleryService( String host )
 	{
 		this.host = host;
+		System.out.println("\nCeleryService: Initialized =================================\n");
 	}
 
 	public CeleryService( Connection connection )
@@ -70,11 +72,11 @@ public class CeleryService extends AbstractExecutionThreadService implements Job
 		createConnectionIfRequired();
 		channel = connection.createChannel();
 
-		channel.queueDeclare( QUEUE_NAME, true, false, false, null );
+		channel.queueDeclare( EXCHANGE_NAME, true, false, false, null );
 		System.out.println( "Waiting for tasks from host " + connection.getAddress() + "." );
 
 		QueueingConsumer consumer = new QueueingConsumer( channel );
-		channel.basicConsume( QUEUE_NAME, true, consumer );
+		channel.basicConsume( EXCHANGE_NAME, true, consumer );
 
 		while( isRunning() )
 		{
@@ -90,8 +92,34 @@ public class CeleryService extends AbstractExecutionThreadService implements Job
 			{
 				onTask.handle( task ); // This is blocking!
 			}
-
 		}
 	}
 
+	@Override
+	public CeleryService startAsynchronous()
+	{
+		startAsync();
+		return this;
+	}
+
+	@Override
+	public CeleryService waitUntilRunning()
+	{
+		awaitRunning();
+		return this;
+	}
+
+	@Override
+	public CeleryService stopAsynchronous()
+	{
+		stopAsync();
+		return this;
+	}
+
+	@Override
+	public CeleryService waitUntilTerminated()
+	{
+		awaitTerminated();
+		return this;
+	}
 }
