@@ -8,7 +8,8 @@ public enum Queue
 
 	private String queue;
 
-	private Queue( String queue ){
+	private Queue( String queue )
+	{
 		this.queue = queue;
 	}
 

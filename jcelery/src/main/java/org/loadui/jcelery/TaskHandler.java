@@ -1,6 +1,4 @@
-package org.loadui.jcelery.api;
-
-import org.loadui.jcelery.api.Task;
+package org.loadui.jcelery;
 
 import java.util.EventListener;
 

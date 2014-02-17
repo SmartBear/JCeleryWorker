@@ -1,4 +1,4 @@
-package org.loadui.jcelery.api;
+package org.loadui.jcelery;
 
 /**
  * @author renato

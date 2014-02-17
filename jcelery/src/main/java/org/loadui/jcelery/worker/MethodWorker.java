@@ -7,27 +7,29 @@ import com.rabbitmq.client.QueueingConsumer;
 import org.loadui.jcelery.base.Exchange;
 import org.loadui.jcelery.base.Queue;
 import org.loadui.jcelery.base.Worker;
+import org.loadui.jcelery.tasks.MethodTask;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 public class MethodWorker extends Worker
 {
-	public MethodWorker( String host ){
+	public MethodWorker( String host )
+	{
 		super( host, Queue.CELERY, Exchange.RESULTS );
-		System.out.println("Waiting for start tasks from host: " + host);
+		System.out.println( "Waiting for start tasks from host: " + host );
 	}
 
 	public void respond( String id, String response ) throws IOException
 	{
 		Channel responseChannel = connection.createChannel();
 
-		String routingKey = id.replace( "-", "" );
-		responseChannel.queueDeclare( getQueue(), true, false, true, ImmutableMap.of( "x-expires", ( Object )86400000 ) );
-		responseChannel.queueBind( getExchange(), getQueue(), routingKey );
+		String responseQueue = id.replace( "-", "" );
+		String routingKey = responseQueue;
 
 		AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
 
-		channel.basicPublish( getExchange(), getQueue(), props, response.getBytes() );
+		channel.basicPublish( getExchange(), routingKey, props, response.getBytes() );
 		System.out.println( "Responded to task: " + id + " with " + response );
 	}
 
@@ -37,7 +39,7 @@ public class MethodWorker extends Worker
 		createConnectionIfRequired();
 		channel = connection.createChannel();
 
-		channel.queueDeclare( getQueue(), true, false, false, null );
+		channel.queueDeclare( getQueue(), true, false, false, new HashMap<String, Object>() );
 		System.out.println( "Waiting for tasks from host " + connection.getAddress() + "." );
 
 		QueueingConsumer consumer = new QueueingConsumer( channel );
@@ -50,8 +52,7 @@ public class MethodWorker extends Worker
 
 			System.out.println( delivery.getEnvelope().getRoutingKey() + " @ " + delivery.getEnvelope().getExchange() + " @ " + delivery.getEnvelope().getDeliveryTag() + " @ " + message );
 
-
-			org.loadui.jcelery.tasks.MethodWorker task = org.loadui.jcelery.tasks.MethodWorker.fromJson( message, this );
+			MethodTask task = MethodTask.fromJson( message, this );
 
 			if( onTask != null )
 			{

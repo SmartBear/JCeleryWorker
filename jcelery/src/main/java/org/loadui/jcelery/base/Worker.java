@@ -4,8 +4,7 @@ import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import org.loadui.jcelery.api.TaskHandler;
-
+import org.loadui.jcelery.TaskHandler;
 
 import java.io.IOException;
 
@@ -14,11 +13,12 @@ public abstract class Worker extends AbstractExecutionThreadService
 	protected TaskHandler onTask;
 	protected Connection connection;
 	protected Channel channel;
-   protected String host;
+	protected String host;
 	private Queue queue;
 	private Exchange exchange;
 
-	public Worker( String host, Queue queue, Exchange exchange ){
+	public Worker( String host, Queue queue, Exchange exchange )
+	{
 		this.host = host;
 		this.queue = queue;
 		this.exchange = exchange;
@@ -34,26 +34,31 @@ public abstract class Worker extends AbstractExecutionThreadService
 		}
 	}
 
-	public void setTaskHandler( TaskHandler<?> handler ){
-	 	this.onTask = handler;
+	public void setTaskHandler( TaskHandler<?> handler )
+	{
+		this.onTask = handler;
 	}
 
-	Worker startAsynchronous(){
+	Worker startAsynchronous()
+	{
 		startAsync();
 		return this;
 	}
 
-	Worker waitUntilRunning(){
+	Worker waitUntilRunning()
+	{
 		awaitRunning();
 		return this;
 	}
 
-	Worker stopAsynchronous(){
+	Worker stopAsynchronous()
+	{
 		stopAsync();
 		return this;
 	}
 
-	Worker waitUntilTerminated(){
+	Worker waitUntilTerminated()
+	{
 		awaitTerminated();
 		return this;
 	}
@@ -67,7 +72,7 @@ public abstract class Worker extends AbstractExecutionThreadService
 		return queue.getQueue();
 	}
 
-		public String getExchange()
+	public String getExchange()
 	{
 		return exchange.getExchange();
 	}

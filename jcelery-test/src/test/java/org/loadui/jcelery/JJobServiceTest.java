@@ -2,7 +2,7 @@ package org.loadui.jcelery;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.loadui.jcelery.api.JobService;
+import org.loadui.jcelery.JobService;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -62,7 +62,6 @@ public class JJobServiceTest
 	public void celeryServiceIsExposed()
 	{
 		assertThat( celeryService, notNullValue() );
-		//assertThat( celeryService.isRunning(), is( false ) );
 	}
 
 }

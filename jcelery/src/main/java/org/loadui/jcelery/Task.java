@@ -1,6 +1,5 @@
-package org.loadui.jcelery.api;
+package org.loadui.jcelery;
 
-import org.loadui.jcelery.base.Status;
 import org.loadui.jcelery.base.Worker;
 
 import java.io.IOException;
@@ -34,4 +33,8 @@ public interface Task
 
 	Worker getService();
 
+	public enum Status
+	{
+		PENDING, STARTED, RETRY, FAILURE, SUCCESS, REVOKED
+	}
 }

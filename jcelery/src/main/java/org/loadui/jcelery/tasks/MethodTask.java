@@ -6,9 +6,7 @@ import com.google.common.collect.Lists;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.loadui.jcelery.base.Status;
-import org.loadui.jcelery.api.Task;
-import org.loadui.jcelery.base.Worker;
+import org.loadui.jcelery.Task;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,7 +16,7 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class MethodWorker implements Task
+public class MethodTask implements Task
 {
 	private final String task;
 	private final String id;
@@ -27,9 +25,9 @@ public class MethodWorker implements Task
 	private final int retries;
 	private final Date eta;
 	private final Date expires;
-	private final Worker service;
+	private final org.loadui.jcelery.base.Worker service;
 
-	public static MethodWorker fromJson( String json, Worker service )
+	public static MethodTask fromJson( String json, org.loadui.jcelery.base.Worker service )
 	{
 		Object o = JSONValue.parse( json );
 		JSONObject jsonObject = ( JSONObject )o;
@@ -44,7 +42,7 @@ public class MethodWorker implements Task
 		return builder.build();
 	}
 
-	private MethodWorker( Builder b )
+	private MethodTask( Builder b )
 	{
 		this.task = b.task;
 		this.id = b.id;
@@ -121,7 +119,7 @@ public class MethodWorker implements Task
 		return expires;
 	}
 
-	public Worker getService()
+	public org.loadui.jcelery.base.Worker getService()
 	{
 		return service;
 	}
@@ -135,9 +133,9 @@ public class MethodWorker implements Task
 		int retries;
 		Date eta;
 		Date expires;
-		Worker service;
+		org.loadui.jcelery.base.Worker service;
 
-		private Builder( String task, String id, Worker service )
+		private Builder( String task, String id, org.loadui.jcelery.base.Worker service )
 		{
 			checkNotNull( task );
 			checkNotNull( id );
@@ -148,9 +146,9 @@ public class MethodWorker implements Task
 			this.service = service;
 		}
 
-		MethodWorker build()
+		MethodTask build()
 		{
-			return new MethodWorker( this );
+			return new MethodTask( this );
 		}
 	}
 }
