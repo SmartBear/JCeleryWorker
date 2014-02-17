@@ -1,6 +1,7 @@
-package org.loadui.jcelery;
+package org.loadui.jcelery.api;
 
-import org.loadui.jcelery.internal.CeleryService;
+import org.loadui.jcelery.base.Status;
+import org.loadui.jcelery.base.Worker;
 
 import java.io.IOException;
 import java.util.Date;
@@ -31,6 +32,6 @@ public interface Task
 
 	Date getExpires();
 
-	CeleryService getService();
+	Worker getService();
 
 }

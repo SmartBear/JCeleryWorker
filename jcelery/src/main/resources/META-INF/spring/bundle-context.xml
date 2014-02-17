@@ -7,7 +7,7 @@
         <constructor-arg value="loadlocal" />
     </bean>
 
-    <bean id="jobService" class="org.loadui.jcelery.internal.CeleryService">
+    <bean id="jobService" class="org.loadui.jcelery.base.CeleryService">
         <constructor-arg ref="mq-host" />
     </bean>
 

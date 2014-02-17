@@ -1,4 +1,4 @@
-package org.loadui.jcelery.internal;
+package org.loadui.jcelery.tasks;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
@@ -6,8 +6,9 @@ import com.google.common.collect.Lists;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.loadui.jcelery.Status;
-import org.loadui.jcelery.Task;
+import org.loadui.jcelery.base.Status;
+import org.loadui.jcelery.api.Task;
+import org.loadui.jcelery.base.Worker;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class CeleryTask implements Task
+public class MethodWorker implements Task
 {
 	private final String task;
 	private final String id;
@@ -26,9 +27,9 @@ public class CeleryTask implements Task
 	private final int retries;
 	private final Date eta;
 	private final Date expires;
-	private final CeleryService service;
+	private final Worker service;
 
-	public static CeleryTask fromJson( String json, CeleryService service )
+	public static MethodWorker fromJson( String json, Worker service )
 	{
 		Object o = JSONValue.parse( json );
 		JSONObject jsonObject = ( JSONObject )o;
@@ -43,7 +44,7 @@ public class CeleryTask implements Task
 		return builder.build();
 	}
 
-	private CeleryTask( Builder b )
+	private MethodWorker( Builder b )
 	{
 		this.task = b.task;
 		this.id = b.id;
@@ -120,7 +121,7 @@ public class CeleryTask implements Task
 		return expires;
 	}
 
-	public CeleryService getService()
+	public Worker getService()
 	{
 		return service;
 	}
@@ -134,9 +135,9 @@ public class CeleryTask implements Task
 		int retries;
 		Date eta;
 		Date expires;
-		CeleryService service;
+		Worker service;
 
-		private Builder( String task, String id, CeleryService service )
+		private Builder( String task, String id, Worker service )
 		{
 			checkNotNull( task );
 			checkNotNull( id );
@@ -147,9 +148,9 @@ public class CeleryTask implements Task
 			this.service = service;
 		}
 
-		CeleryTask build()
+		MethodWorker build()
 		{
-			return new CeleryTask( this );
+			return new MethodWorker( this );
 		}
 	}
 }
