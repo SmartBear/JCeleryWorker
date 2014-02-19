@@ -1,10 +1,10 @@
 package org.loadui.jcelery.demo;
 
+import org.loadui.jcelery.Job;
 import org.loadui.jcelery.JobService;
-import org.loadui.jcelery.Task;
 import org.loadui.jcelery.TaskHandler;
 import org.loadui.jcelery.base.CeleryService;
-import org.loadui.jcelery.tasks.MethodTask;
+import org.loadui.jcelery.tasks.InvokeJob;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,15 +15,15 @@ public class DemoApp
 	{
 
 		JobService celeryService = new CeleryService();
-		celeryService.setJobHandler( new TaskHandler<MethodTask>()
+		celeryService.setInvokeHandler( new TaskHandler<InvokeJob>()
 		{
 			@Override
-			public void handle( MethodTask t ) throws IOException
+			public void handle( InvokeJob t ) throws IOException
 			{
-				switch( t.getTask() )
+				switch( t.getMethod() )
 				{
 					case "tasks.add":
-						t.complete( Task.Status.SUCCESS, add( t ) );
+						t.complete( Job.Status.SUCCESS, add( t ) );
 				}
 			}
 		} );
@@ -35,7 +35,7 @@ public class DemoApp
 		celeryService.stopService();
 	}
 
-	private static long add( MethodTask t )
+	private static long add( InvokeJob t )
 	{
 		List<Object> args = t.getArgs();
 		long x = ( long )args.get( 0 );

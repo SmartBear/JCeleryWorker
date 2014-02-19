@@ -5,7 +5,7 @@ package org.loadui.jcelery;
  */
 public interface JobService
 {
-	void setJobHandler( TaskHandler<?> handler );
+	void setInvokeHandler( TaskHandler<?> handler );
 
 	void setRevokeHandler( TaskHandler<?> handler );
 

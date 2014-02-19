@@ -2,7 +2,7 @@ package org.loadui.jcelery.base;
 
 import org.loadui.jcelery.JobService;
 import org.loadui.jcelery.TaskHandler;
-import org.loadui.jcelery.worker.MethodWorker;
+import org.loadui.jcelery.worker.InvokeWorker;
 import org.loadui.jcelery.worker.RevokeWorker;
 
 import java.io.IOException;
@@ -11,30 +11,28 @@ import java.util.List;
 
 public class CeleryService implements JobService
 {
-	List<Worker> workers;
+	private List<AbstractWorker> workers;
 
-	private Worker revokeWorker;
-	private Worker jobWorker;
+	private AbstractWorker revokeWorker;
+	private AbstractWorker jobWorker;
 
 	public CeleryService() throws IOException
 	{
 		this( "localhost" );
-
 	}
 
 	public CeleryService( String host )
 	{
 		workers = new ArrayList<>();
 		revokeWorker = new RevokeWorker( host );
-		jobWorker = new MethodWorker( host );
+		jobWorker = new InvokeWorker( host );
 
 		workers.add( jobWorker );
 		workers.add( revokeWorker );
-		System.out.println( "CeleryService Initialized" );
 	}
 
 	@Override
-	public void setJobHandler( TaskHandler handler )
+	public void setInvokeHandler( TaskHandler handler )
 	{
 		this.jobWorker.setTaskHandler( handler );
 	}
@@ -48,7 +46,7 @@ public class CeleryService implements JobService
 	@Override
 	public void startService()
 	{
-		for( Worker worker : workers )
+		for( AbstractWorker worker : workers )
 		{
 			worker.startAsynchronous();
 			worker.waitUntilRunning();
@@ -58,12 +56,10 @@ public class CeleryService implements JobService
 	@Override
 	public void stopService()
 	{
-		for( Worker worker : workers )
+		for( AbstractWorker worker : workers )
 		{
 			worker.stopAsynchronous();
 			worker.waitUntilTerminated();
 		}
 	}
-
-
 }

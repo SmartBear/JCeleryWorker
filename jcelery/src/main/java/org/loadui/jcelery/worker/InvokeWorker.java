@@ -5,44 +5,39 @@ import com.rabbitmq.client.QueueingConsumer;
 import org.loadui.jcelery.Exchange;
 import org.loadui.jcelery.Queue;
 import org.loadui.jcelery.base.AbstractWorker;
-import org.loadui.jcelery.tasks.RevokeJob;
+import org.loadui.jcelery.tasks.InvokeJob;
 
 import java.io.IOException;
 import java.util.HashMap;
 
-public class RevokeWorker extends AbstractWorker
+public class InvokeWorker extends AbstractWorker
 {
-	public RevokeWorker( String host )
+	public InvokeWorker( String host )
 	{
-		super( host, Queue.REVOKE, Exchange.RESULTS );
-		System.out.println( "Waiting for revoke tasks from host: " + host + " on " + Queue.REVOKE + "" );
+		super( host, Queue.CELERY, Exchange.RESULTS );
 	}
 
-	@Override
 	public void respond( String id, String response ) throws IOException
 	{
 		String routingKey = id.replace( "-", "" );
-
-		AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
 
 		getChannel().queueDeclare( getExchange(), true, false, false, new HashMap<String, Object>() );
 		getChannel().exchangeDeclare( getExchange(), "fanout" );
 		getChannel().queueBind( getExchange(), getExchange(), routingKey );
 
+		AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
+
+		System.out.println( "Responded to task to exchange: " + getExchange() + " for task: " + id + " with " + response );
 		getChannel().basicPublish( getExchange(), routingKey, props, response.getBytes() );
-		System.out.println( "Responded to task: " + id + " with " + response );
 	}
 
 	@Override
-	protected void run() throws Exception
+	public void run() throws Exception
 	{
 		createConnectionIfRequired();
 
-		getChannel().exchangeDeclare( getQueue(), "fanout" );
-		getChannel().queueDeclare( getQueue(), false, false, false, null );
-		getChannel().queueBind( getQueue(), getQueue(), "" );
-
-		System.out.println( "RevokeWorker: Waiting for tasks from host " + getConnection().getAddress() + " on x-change: " + getQueue() + " bound to queue: " + getQueue() );
+		getChannel().queueDeclare( getQueue(), true, false, false, new HashMap<String, Object>() );
+		System.out.println( "InvokeWorker: Waiting for tasks from host " + getConnection().getAddress() + " on x-change: " + getExchange() + " bound to queue: " + getQueue() );
 
 		QueueingConsumer consumer = new QueueingConsumer( getChannel() );
 		getChannel().basicConsume( getQueue(), true, consumer );
@@ -54,7 +49,7 @@ public class RevokeWorker extends AbstractWorker
 
 			System.out.println( delivery.getEnvelope().getRoutingKey() + " @ " + delivery.getEnvelope().getExchange() + " @ " + delivery.getEnvelope().getDeliveryTag() + " @ " + message );
 
-			RevokeJob task = RevokeJob.fromJson( message, this );
+			InvokeJob task = InvokeJob.fromJson( message, this );
 
 			if( onJob != null )
 			{

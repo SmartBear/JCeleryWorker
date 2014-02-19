@@ -1,8 +1,7 @@
-package org.loadui.jcelery.base;
+package org.loadui.jcelery;
 
 public enum Queue
 {
-
 	REVOKE( "celery.pidbox" ),
 	CELERY( "celery" );
 
@@ -17,4 +16,5 @@ public enum Queue
 	{
 		return queue;
 	}
+
 }

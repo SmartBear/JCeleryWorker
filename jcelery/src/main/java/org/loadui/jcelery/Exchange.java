@@ -1,9 +1,10 @@
-package org.loadui.jcelery.base;
+package org.loadui.jcelery;
 
 
 public enum Exchange
 {
-	RESULTS( "celeryresults" ),
+	CELERY( "celery" ),
+	RESULTS("celeryresults"),
 	EVENT( "celeryev" );
 
 	private String queue;
