@@ -26,10 +26,10 @@ public class RevokeWorker extends AbstractWorker
 		AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
 
 		getChannel().queueDeclare( getExchange(), true, false, false, new HashMap<String, Object>() );
-		getChannel().exchangeDeclare( getExchange(), "fanout" );
-		getChannel().queueBind( getExchange(), getExchange(), routingKey );
+		//getChannel().exchangeDeclare( getExchange(), "direct" );
+		//getChannel().queueBind( getExchange(), getExchange(), routingKey );
 
-		getChannel().basicPublish( getExchange(), routingKey, props, response.getBytes() );
+		getChannel().basicPublish( "", getExchange(), props, response.getBytes() );
 		System.out.println( "Responded to task: " + id + " with " + response );
 	}
 
@@ -39,7 +39,7 @@ public class RevokeWorker extends AbstractWorker
 		createConnectionIfRequired();
 
 		getChannel().exchangeDeclare( getQueue(), "fanout" );
-		getChannel().queueDeclare( getQueue(), false, false, false, null );
+		getChannel().queueDeclare( getQueue(), true, false, false, null );
 		getChannel().queueBind( getQueue(), getQueue(), "" );
 
 		System.out.println( "RevokeWorker: Waiting for tasks from host " + getConnection().getAddress() + " on x-change: " + getQueue() + " bound to queue: " + getQueue() );

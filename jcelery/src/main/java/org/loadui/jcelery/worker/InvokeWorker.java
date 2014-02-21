@@ -22,13 +22,12 @@ public class InvokeWorker extends AbstractWorker
 		String routingKey = id.replace( "-", "" );
 
 		getChannel().queueDeclare( getExchange(), true, false, false, new HashMap<String, Object>() );
-		getChannel().exchangeDeclare( getExchange(), "fanout" );
-		getChannel().queueBind( getExchange(), getExchange(), routingKey );
+		//getChannel().queueBind( getExchange(), getExchange(), routingKey );
 
 		AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
 
 		System.out.println( "Responded to task to exchange: " + getExchange() + " for task: " + id + " with " + response );
-		getChannel().basicPublish( getExchange(), routingKey, props, response.getBytes() );
+		getChannel().basicPublish( "", getExchange(), props, response.getBytes() );
 	}
 
 	@Override
