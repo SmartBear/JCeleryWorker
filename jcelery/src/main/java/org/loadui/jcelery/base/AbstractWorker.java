@@ -15,24 +15,30 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 	protected TaskHandler onJob;
 	private Connection connection;
 	private Channel channel;
-	private String host;
+	private ConnectionFactory connectionFactory;
 	private Queue queue;
 	private Exchange exchange;
 
-	public AbstractWorker( String host, Queue queue, Exchange exchange )
+	public AbstractWorker( ConnectionFactory connectionFactory,
+								  Queue queue, Exchange exchange )
 	{
-		this.host = host;
+		this.connectionFactory = connectionFactory;
 		this.queue = queue;
 		this.exchange = exchange;
 	}
 
+	public AbstractWorker( String host,
+								  Queue queue, Exchange exchange )
+	{
+		this( new ConnectionFactory(), queue, exchange );
+		this.connectionFactory.setHost( host );
+	}
+
 	protected void createConnectionIfRequired() throws IOException
 	{
-		if( getConnection() == null && getHost() != null )
+		if( getConnection() == null && getConnectionFactory() != null )
 		{
-			ConnectionFactory factory = new ConnectionFactory();
-			factory.setHost( getHost() );
-			connection = factory.newConnection();
+			connection = connectionFactory.newConnection();
 			channel = connection.createChannel();
 		}
 	}
@@ -67,7 +73,6 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 	}
 
 
-
 	public abstract void respond( String id, String response ) throws IOException;
 
 	protected abstract void run() throws Exception;
@@ -92,8 +97,8 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 		return connection;
 	}
 
-	public String getHost()
+	public ConnectionFactory getConnectionFactory()
 	{
-		return host;
+		return connectionFactory;
 	}
 }
