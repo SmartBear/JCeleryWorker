@@ -12,17 +12,34 @@ This replaces the worker from the [First Steps with Celery][2] tutoral:
 ```java
 public class DemoApp {
 	public static void main(String[] _) throws Exception {
-		CeleryService celeryService = new CeleryService("localhost");
-		celeryService.setTaskHandler( new TaskHandler() {
-			@Override
-			public void handle(CeleryTask t) {
-				switch(t.task) {
-					case "tasks.add": t.complete(SUCCESS, add(t));
-				}
-			}
-		} );
+		JobService celeryService = new CeleryService();
+      		celeryService.setInvokeHandler( new TaskHandler<InvokeJob>()
+      		{
+      			@Override
+      			public void handle( InvokeJob t ) throws IOException
+      			{
+      				switch( t.getMethod() )
+      				{
+      					case "tasks.add":
+      						t.complete( Job.Status.SUCCESS, add( t ) );
+      				}
+      			}
+      		} );
 
-		celeryService.startAsync();
+      		celeryService.setRevokeHandler( new TaskHandler<InvokeJob>()
+      		{
+      			@Override
+      			public void handle( InvokeJob t ) throws IOException
+      			{
+      				switch( t.getMethod() )
+      				{
+      					case "revoke":
+      						t.complete( Job.Status.REVOKED );
+      				}
+      			}
+      		} );
+
+      		celeryService.startService();
 
 		// ...
 	}

@@ -8,7 +8,8 @@ import org.loadui.jcelery.Job;
 import org.loadui.jcelery.base.AbstractWorker;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -27,11 +28,11 @@ public class RevokeJob implements Job
 		JSONObject jsonObject = ( JSONObject )o;
 
 		String method = ( String )jsonObject.get( "method" );
-		JSONObject arguments = ( JSONObject ) jsonObject.get( "arguments" );
-		String signal = ( String ) arguments.get( "signal" );
-		Boolean terminate = ( Boolean ) arguments.get( "terminate" );
-		String serializer = ( String ) arguments.get( "serializer" );
-		String task_id = ( String ) arguments.get( "task_id" );
+		JSONObject arguments = ( JSONObject )jsonObject.get( "arguments" );
+		String signal = ( String )arguments.get( "signal" );
+		Boolean terminate = ( Boolean )arguments.get( "terminate" );
+		String serializer = ( String )arguments.get( "serializer" );
+		String task_id = ( String )arguments.get( "task_id" );
 		String destination = ( String )jsonObject.get( "destination" );
 		Builder builder = new Builder( method, task_id, service );
 
@@ -68,6 +69,12 @@ public class RevokeJob implements Job
 	}
 
 	@Override
+	public void complete( Status status ) throws IOException
+	{
+		complete( status, "" );
+	}
+
+	@Override
 	public String getId()
 	{
 		return task_id;
@@ -82,7 +89,7 @@ public class RevokeJob implements Job
 	@Override
 	public List getArgs()
 	{
-		return Lists.newArrayList( method, signal, terminate, task_id, serializer ) ;
+		return Lists.newArrayList( method, signal, terminate, task_id, serializer );
 	}
 
 	@Override
