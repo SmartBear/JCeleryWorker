@@ -1,6 +1,7 @@
 package org.loadui.jcelery.worker;
 
 import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
 import org.loadui.jcelery.Exchange;
 import org.loadui.jcelery.Queue;
@@ -15,6 +16,11 @@ public class RevokeWorker extends AbstractWorker
 	public RevokeWorker( String host )
 	{
 		super( host, Queue.REVOKE, Exchange.RESULTS );
+	}
+
+	public RevokeWorker( ConnectionFactory connectionFactory )
+	{
+		super( connectionFactory, Queue.REVOKE, Exchange.RESULTS );
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import org.loadui.jcelery.TaskHandler;
 import org.loadui.jcelery.worker.InvokeWorker;
 import org.loadui.jcelery.worker.RevokeWorker;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,27 +13,30 @@ public class CeleryService implements JobService
 	private List<AbstractWorker> workers;
 
 	private AbstractWorker revokeWorker;
-	private AbstractWorker jobWorker;
+	private AbstractWorker invokeWorker;
 
-	public CeleryService() throws IOException
-	{
-		this( "localhost" );
+
+	public CeleryService( InvokeWorker invoker, RevokeWorker revoker ){
+		this.workers = new ArrayList<>();
+		this.revokeWorker = revoker;
+		this.invokeWorker = invoker;
+		this.workers.add( invokeWorker );
+		this.workers.add( revokeWorker );
 	}
 
 	public CeleryService( String host )
 	{
-		workers = new ArrayList<>();
-		revokeWorker = new RevokeWorker( host );
-		jobWorker = new InvokeWorker( host );
+		this( new InvokeWorker( host ), new RevokeWorker( host ) );
+	}
 
-		workers.add( jobWorker );
-		workers.add( revokeWorker );
+	public CeleryService( ){
+		this( "localhost" );
 	}
 
 	@Override
 	public void setInvokeHandler( TaskHandler handler )
 	{
-		this.jobWorker.setTaskHandler( handler );
+		this.invokeWorker.setTaskHandler( handler );
 	}
 
 	@Override

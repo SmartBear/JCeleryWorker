@@ -1,6 +1,7 @@
 package org.loadui.jcelery.worker;
 
 import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
 import org.loadui.jcelery.Exchange;
 import org.loadui.jcelery.Queue;
@@ -15,6 +16,11 @@ public class InvokeWorker extends AbstractWorker
 	public InvokeWorker( String host )
 	{
 		super( host, Queue.CELERY, Exchange.RESULTS );
+	}
+
+	public InvokeWorker( ConnectionFactory connectionFactory )
+	{
+		super( connectionFactory, Queue.CELERY, Exchange.RESULTS );
 	}
 
 	public void respond( String id, String response ) throws IOException
