@@ -41,7 +41,7 @@ public class RevokeTest
 	}
 
 	@Test
-	public void revokeJobIsValid()
+	public void shouldFindMandatoryFieldsInRevokeJob()
 	{
 		job = RevokeJob.fromJson( revokeRequest, worker );
 		assertThat( "Revoking a Celery job  has a method", job.getMethod(), is( "revoke" ) );

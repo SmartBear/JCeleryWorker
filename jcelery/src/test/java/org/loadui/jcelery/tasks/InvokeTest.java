@@ -46,7 +46,7 @@ public class InvokeTest
 	}
 
 	@Test
-	public void isMinimalInvokeEvenValid() throws IOException
+	public void shouldFindMandatoryFieldsFromMinimalInvoke() throws IOException
 	{
 		job = InvokeJob.fromJson( validMinimalInvoke, worker );
 		assertThat( "Starting a Celery job using a minimal invoke-operation still has a method", job.getMethod(), is( "tasks.test.start" ) );
@@ -54,7 +54,7 @@ public class InvokeTest
 	}
 
 	@Test
-	public void doesMaximalJobHaveAnyNullFields() throws IOException
+	public void optionalFieldsShouldNotBeNullWithMaximalInvoke() throws IOException
 	{
 
 		job = InvokeJob.fromJson( validMaximalInvoke, worker );
@@ -67,7 +67,7 @@ public class InvokeTest
 	}
 
 	@Test( expected = NullPointerException.class )
-	public void isTaskThatDoesNotContainAMandatoryJSONFieldShouldReturnNull()
+	public void shouldThrowNullPointerWhenInvokeIsInvalid()
 	{
 		job = InvokeJob.fromJson( invalidInvoke, worker );
 	}
