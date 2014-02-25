@@ -28,6 +28,19 @@ public class DemoApp
 			}
 		} );
 
+		celeryService.setRevokeHandler( new TaskHandler<InvokeJob>()
+		{
+			@Override
+			public void handle( InvokeJob t ) throws IOException
+			{
+				switch( t.getMethod() )
+				{
+					case "revoke":
+						t.complete( Job.Status.REVOKED, "" );
+				}
+			}
+		} );
+
 		celeryService.startService();
 
 		Thread.sleep( 300_000 );

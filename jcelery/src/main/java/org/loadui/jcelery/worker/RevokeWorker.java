@@ -15,22 +15,15 @@ public class RevokeWorker extends AbstractWorker
 	public RevokeWorker( String host )
 	{
 		super( host, Queue.REVOKE, Exchange.RESULTS );
-		System.out.println( "Waiting for revoke tasks from host: " + host + " on " + Queue.REVOKE + "" );
 	}
 
 	@Override
 	public void respond( String id, String response ) throws IOException
 	{
-		String routingKey = id.replace( "-", "" );
-
 		AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
-
 		getChannel().queueDeclare( getExchange(), true, false, false, new HashMap<String, Object>() );
-		//getChannel().exchangeDeclare( getExchange(), "direct" );
-		//getChannel().queueBind( getExchange(), getExchange(), routingKey );
 
 		getChannel().basicPublish( "", getExchange(), props, response.getBytes() );
-		System.out.println( "Responded to task: " + id + " with " + response );
 	}
 
 	@Override
@@ -42,7 +35,6 @@ public class RevokeWorker extends AbstractWorker
 		getChannel().queueDeclare( getQueue(), true, false, false, null );
 		getChannel().queueBind( getQueue(), getQueue(), "" );
 
-		System.out.println( "RevokeWorker: Waiting for tasks from host " + getConnection().getAddress() + " on x-change: " + getQueue() + " bound to queue: " + getQueue() );
 
 		QueueingConsumer consumer = new QueueingConsumer( getChannel() );
 		getChannel().basicConsume( getQueue(), true, consumer );
@@ -51,8 +43,6 @@ public class RevokeWorker extends AbstractWorker
 		{
 			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 			String message = new String( delivery.getBody() );
-
-			System.out.println( delivery.getEnvelope().getRoutingKey() + " @ " + delivery.getEnvelope().getExchange() + " @ " + delivery.getEnvelope().getDeliveryTag() + " @ " + message );
 
 			RevokeJob task = RevokeJob.fromJson( message, this );
 

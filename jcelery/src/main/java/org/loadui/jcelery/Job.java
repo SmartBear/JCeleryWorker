@@ -10,6 +10,8 @@ public interface Job
 {
 	void complete( Status status, Object response ) throws IOException;
 
+	void complete( Status status ) throws IOException;
+
 	String getId();
 
 	String getMethod();

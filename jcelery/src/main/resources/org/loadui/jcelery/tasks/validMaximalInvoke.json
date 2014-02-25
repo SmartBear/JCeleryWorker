@@ -1,0 +1,1 @@
+{"expires": "2070-01-01", "utc": true, "args": [ "SomethingBlue", "SomethingBorroed", "SomethingOld" ], "chord": null, "callbacks": null, "errbacks": null, "taskset": "abcdef123456789", "id": "63e12bb7-ac49-44ad-ab7a-8a6a8b0ec3c0", "retries": 2000, "task": "tasks.test.start", "timelimit": ["2015-12-11", "2017-12-11"], "eta": "5 hours", "kwargs": {"Additional" : "Arguments"}}

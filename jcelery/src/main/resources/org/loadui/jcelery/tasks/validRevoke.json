@@ -1,0 +1,1 @@
+{"destination": null, "method": "revoke", "arguments": {"signal": "SIGTERM", "terminate": true, "serializer": "json", "task_id": "0adb664ef6e64fc9b1f5381d4f3852a9"}}

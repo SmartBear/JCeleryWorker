@@ -19,14 +19,9 @@ public class InvokeWorker extends AbstractWorker
 
 	public void respond( String id, String response ) throws IOException
 	{
-		String routingKey = id.replace( "-", "" );
-
 		getChannel().queueDeclare( getExchange(), true, false, false, new HashMap<String, Object>() );
-		//getChannel().queueBind( getExchange(), getExchange(), routingKey );
-
 		AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
 
-		System.out.println( "Responded to task to exchange: " + getExchange() + " for task: " + id + " with " + response );
 		getChannel().basicPublish( "", getExchange(), props, response.getBytes() );
 	}
 
@@ -36,7 +31,6 @@ public class InvokeWorker extends AbstractWorker
 		createConnectionIfRequired();
 
 		getChannel().queueDeclare( getQueue(), true, false, false, new HashMap<String, Object>() );
-		System.out.println( "InvokeWorker: Waiting for tasks from host " + getConnection().getAddress() + " on x-change: " + getExchange() + " bound to queue: " + getQueue() );
 
 		QueueingConsumer consumer = new QueueingConsumer( getChannel() );
 		getChannel().basicConsume( getQueue(), true, consumer );
@@ -45,8 +39,6 @@ public class InvokeWorker extends AbstractWorker
 		{
 			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 			String message = new String( delivery.getBody() );
-
-			System.out.println( delivery.getEnvelope().getRoutingKey() + " @ " + delivery.getEnvelope().getExchange() + " @ " + delivery.getEnvelope().getDeliveryTag() + " @ " + message );
 
 			InvokeJob task = InvokeJob.fromJson( message, this );
 

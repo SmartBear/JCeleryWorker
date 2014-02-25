@@ -78,6 +78,11 @@ public class InvokeJob implements Job
 	}
 
 	@Override
+	public void complete( Status status ) throws IOException{
+		complete( status, "" );
+	}
+
+	@Override
 	public String getId()
 	{
 		return id;
@@ -87,19 +92,19 @@ public class InvokeJob implements Job
 	public String toString()
 	{
 		return Objects.toStringHelper( this )
-				.add( "task", task )
+				.add( "task", getTask() )
 				.add( "id", id )
 				.add( "args", args )
-				.add( "eta", eta )
-				.add( "expires", expires )
-				.add( "retries", retries )
+				.add( "eta", getEta() )
+				.add( "expires", getExpires() )
+				.add( "retries", getRetries() )
 				.omitNullValues()
 				.add( "kwargs", kwargs ).toString();
 	}
 
 	public String getMethod()
 	{
-		return task;
+		return getTask();
 	}
 
 	public List getArgs()
@@ -115,6 +120,26 @@ public class InvokeJob implements Job
 	public AbstractWorker getService()
 	{
 		return service;
+	}
+
+	public String getTask()
+	{
+		return task;
+	}
+
+	public Long getRetries()
+	{
+		return retries;
+	}
+
+	public String getEta()
+	{
+		return eta;
+	}
+
+	public String getExpires()
+	{
+		return expires;
 	}
 
 	static class Builder
