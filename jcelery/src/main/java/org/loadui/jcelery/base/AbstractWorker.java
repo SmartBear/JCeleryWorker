@@ -4,9 +4,7 @@ import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import org.loadui.jcelery.Exchange;
-import org.loadui.jcelery.Queue;
-import org.loadui.jcelery.TaskHandler;
+import org.loadui.jcelery.*;
 
 import java.io.IOException;
 
@@ -15,31 +13,33 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 	protected TaskHandler onJob;
 	private Connection connection;
 	private Channel channel;
-	private ConnectionFactory connectionFactory;
-	private Queue queue;
-	private Exchange exchange;
+	private final ConnectionProvider connectionFactory;
+	private final Queue queue;
+	private final Exchange exchange;
+	private final MessageConsumer consumer;
 
-	public AbstractWorker( ConnectionFactory connectionFactory,
+	public AbstractWorker( ConnectionProvider connectionFactory, MessageConsumer consumer,
 								  Queue queue, Exchange exchange )
 	{
 		this.connectionFactory = connectionFactory;
 		this.queue = queue;
 		this.exchange = exchange;
+		this.consumer = consumer;
 	}
 
 	public AbstractWorker( String host,
 								  Queue queue, Exchange exchange )
 	{
-		this( new ConnectionFactory(), queue, exchange );
-		this.connectionFactory.setHost( host );
+		this( new RabbitProvider( host ), new RabbitConsumer(), queue, exchange );
 	}
 
 	protected void createConnectionIfRequired() throws IOException
 	{
 		if( getConnection() == null && getConnectionFactory() != null )
 		{
-			connection = connectionFactory.newConnection();
+			connection = connectionFactory.getFactory().newConnection();
 			channel = connection.createChannel();
+			consumer.initialize( channel );
 		}
 	}
 
@@ -92,12 +92,17 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 		return channel;
 	}
 
+	public MessageConsumer getMessageConsumer()
+	{
+		return consumer;
+	}
+
 	public Connection getConnection()
 	{
 		return connection;
 	}
 
-	public ConnectionFactory getConnectionFactory()
+	public ConnectionProvider getConnectionFactory()
 	{
 		return connectionFactory;
 	}
