@@ -7,29 +7,27 @@ import org.loadui.jcelery.MessageConsumer;
 
 public class RabbitConsumer implements MessageConsumer
 {
-   private QueueingConsumer consumer;
+	private QueueingConsumer consumer;
 
 	@Override
 	public String nextMessage()
 	{
-		try{
-			String message = new String ( consumer.nextDelivery().getBody() );
+		try
+		{
+			String message = new String( consumer.nextDelivery().getBody() );
 			return message;
-		}catch( InterruptedException e ){
+		}
+		catch( InterruptedException e )
+		{
 			e.printStackTrace();
 			return new String();
 		}
 	}
 
 	@Override
-	public void initialize( Channel channel )
+	public Consumer initialize( Channel channel )
 	{
 		consumer = new QueueingConsumer( channel );
-	}
-
-	@Override
-	public Consumer getConsumer()
-	{
 		return consumer;
 	}
 }

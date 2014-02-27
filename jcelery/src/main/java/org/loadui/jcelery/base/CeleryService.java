@@ -16,7 +16,8 @@ public class CeleryService implements JobService
 	private AbstractWorker invokeWorker;
 
 
-	public CeleryService( InvokeWorker invoker, RevokeWorker revoker ){
+	public CeleryService( InvokeWorker invoker, RevokeWorker revoker )
+	{
 		this.workers = new ArrayList<>();
 		this.revokeWorker = revoker;
 		this.invokeWorker = invoker;
@@ -29,7 +30,8 @@ public class CeleryService implements JobService
 		this( new InvokeWorker( host ), new RevokeWorker( host ) );
 	}
 
-	public CeleryService( ){
+	public CeleryService()
+	{
 		this( "localhost" );
 	}
 

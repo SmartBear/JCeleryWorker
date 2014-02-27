@@ -1,6 +1,7 @@
 package org.loadui.jcelery.worker;
 
 import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Consumer;
 import org.loadui.jcelery.ConnectionProvider;
 import org.loadui.jcelery.Exchange;
 import org.loadui.jcelery.MessageConsumer;
@@ -34,24 +35,29 @@ public class InvokeWorker extends AbstractWorker
 	public void run() throws Exception
 	{
 		createConnectionIfRequired();
-		MessageConsumer messageConsumer = getMessageConsumer();
+
+		Consumer rabbitConsumer = getMessageConsumer().initialize( getChannel() );
 
 		getChannel().queueDeclare( getQueue(), true, false, false, new HashMap<String, Object>() );
-		getChannel().basicConsume( getQueue(), true, messageConsumer.getConsumer() );
+		getChannel().basicConsume( getQueue(), true, rabbitConsumer );
 
 		while( isRunning() )
 		{
-			try{
 
-			String message = messageConsumer.nextMessage();
+			String message = getMessageConsumer().nextMessage();
 
-			InvokeJob task = InvokeJob.fromJson( message, this );
-
-			if( onJob != null )
+         try
 			{
-				onJob.handle( task ); // This is blocking!
+				InvokeJob task = InvokeJob.fromJson( message, this );
+
+				if( onJob != null && task != null )
+				{
+					onJob.handle( task ); // This is blocking!
+				}
 			}
-			}catch(Exception e){
+			catch( NullPointerException e )
+			{
+				System.err.println( "job could not be parsed, is it the correct format? Supported formats: [JSON], Non-supported formats: [ Pickle, MessagePack, XML ]" );
 				e.printStackTrace();
 			}
 		}

@@ -14,10 +14,6 @@ public interface MessageConsumer
 	/**
 	 * Initializes the underlying consumer and makes it ready to take new Messages.
 	 */
-	public void initialize( Channel name );
+	public Consumer initialize( Channel name );
 
-	/**
-	 * return the consumer that is created upon initialization
-	 */
-	public Consumer getConsumer();
 }

@@ -1,6 +1,7 @@
 package org.loadui.jcelery.worker;
 
 import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Consumer;
 import org.loadui.jcelery.ConnectionProvider;
 import org.loadui.jcelery.Exchange;
 import org.loadui.jcelery.MessageConsumer;
@@ -39,16 +40,17 @@ public class RevokeWorker extends AbstractWorker
 		getChannel().exchangeDeclare( getQueue(), "fanout" );
 		getChannel().queueDeclare( getQueue(), true, false, false, null );
 		getChannel().queueBind( getQueue(), getQueue(), "" );
-		MessageConsumer messageConsumer = getMessageConsumer();
+		Consumer rabbitConsumer = getMessageConsumer().initialize( getChannel() );
 
-		getChannel().basicConsume( getQueue(), true, messageConsumer.getConsumer() );
+		getChannel().basicConsume( getQueue(), true, rabbitConsumer );
 
 		while( isRunning() )
 		{
+
+			String message = getMessageConsumer().nextMessage();
+
 			try
 			{
-				String message = messageConsumer.nextMessage();
-
 				RevokeJob task = RevokeJob.fromJson( message, this );
 
 				if( onJob != null )
@@ -56,10 +58,12 @@ public class RevokeWorker extends AbstractWorker
 					onJob.handle( task ); // This is blocking!
 				}
 			}
-			catch( Exception e )
+			catch( NullPointerException e )
 			{
+				System.err.println( "job could not be parsed, is it the correct format? Supported formats: [JSON], Non-supported formats: [ Pickle, MessagePack, XML ]" );
 				e.printStackTrace();
 			}
 		}
 	}
 }
+

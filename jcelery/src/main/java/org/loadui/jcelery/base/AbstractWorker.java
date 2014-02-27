@@ -39,7 +39,6 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 		{
 			connection = connectionFactory.getFactory().newConnection();
 			channel = connection.createChannel();
-			consumer.initialize( channel );
 		}
 	}
 
