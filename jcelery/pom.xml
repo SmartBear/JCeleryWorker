@@ -22,7 +22,6 @@
                 <configuration>
                     <instructions>
                         <Export-Package>org.loadui.jcelery</Export-Package>
-                        <Embed-Dependency>*;scope=provided</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>
@@ -41,17 +40,14 @@
         <dependency>
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
