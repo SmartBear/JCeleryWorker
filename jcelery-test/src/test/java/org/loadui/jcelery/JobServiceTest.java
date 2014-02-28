@@ -22,7 +22,7 @@ import static org.ops4j.pax.exam.CoreOptions.*;
  */
 @RunWith( PaxExam.class )
 @ExamReactorStrategy( PerClass.class )
-public class JJobServiceTest
+public class JobServiceTest
 {
 
 	@Inject
