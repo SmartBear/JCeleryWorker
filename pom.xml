@@ -21,6 +21,7 @@
         <mavenBundlePluginVersion>2.3.7</mavenBundlePluginVersion>
         <osgiVersion>4.3.0</osgiVersion>
         <paxExamVersion>3.4.0</paxExamVersion>
+        <slf4jVersion>1.6.1</slf4jVersion>
     </properties>
 
     <build>

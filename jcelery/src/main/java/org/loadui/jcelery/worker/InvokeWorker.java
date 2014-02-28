@@ -8,12 +8,17 @@ import org.loadui.jcelery.MessageConsumer;
 import org.loadui.jcelery.Queue;
 import org.loadui.jcelery.base.AbstractWorker;
 import org.loadui.jcelery.tasks.InvokeJob;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
 
 public class InvokeWorker extends AbstractWorker
 {
+
+	Logger log = LoggerFactory.getLogger( RevokeWorker.class );
+
 	public InvokeWorker( String host )
 	{
 		super( host, Queue.CELERY, Exchange.RESULTS );
@@ -46,7 +51,7 @@ public class InvokeWorker extends AbstractWorker
 
 			String message = getMessageConsumer().nextMessage();
 
-         try
+			try
 			{
 				InvokeJob task = InvokeJob.fromJson( message, this );
 
@@ -57,8 +62,7 @@ public class InvokeWorker extends AbstractWorker
 			}
 			catch( NullPointerException e )
 			{
-				System.err.println( "job could not be parsed, is it the correct format? Supported formats: [JSON], Non-supported formats: [ Pickle, MessagePack, XML ]" );
-				e.printStackTrace();
+				log.error( "job could not be parsed, is it the correct format? Supported formats: [JSON], Non-supported formats: [ Pickle, MessagePack, XML ]" );
 			}
 		}
 	}
