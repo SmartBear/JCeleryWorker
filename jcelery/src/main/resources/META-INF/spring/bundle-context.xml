@@ -7,16 +7,21 @@
         <constructor-arg value="loadlocal" />
     </bean>
 
-    <bean id="connectionFactory" class="com.rabbitmq.client.ConnectionFactory">
-        <property name="host" ref="mq-host"/>
+    <bean id="connectionProvider" class="org.loadui.jcelery.base.RabbitProvider">
+        <constructor-arg ref="mq-host"/>
     </bean>
 
+    <bean id="revokeConsumer" class="org.loadui.jcelery.base.RabbitConsumer"/>
+    <bean id="invokeConsumer" class="org.loadui.jcelery.base.RabbitConsumer"/>
+
     <bean id="revokeWorker" class="org.loadui.jcelery.worker.RevokeWorker">
-        <constructor-arg ref="connectionFactory" />
+        <constructor-arg ref="connection" />
+        <constructor-arg ref="anRevokeConsumer" />
     </bean>
 
     <bean id="invokeWorker" class="org.loadui.jcelery.worker.InvokeWorker">
-        <constructor-arg ref="connectionFactory"/>
+        <constructor-arg ref="connection"/>
+        <constructor-arg ref="anInvokeConsumer"/>
     </bean>
 
     <bean id="jobService" class="org.loadui.jcelery.base.CeleryService">
