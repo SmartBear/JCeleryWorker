@@ -21,7 +21,7 @@
                 <version>${mavenBundlePluginVersion}</version>
                 <configuration>
                     <instructions>
-                        <Export-Package>org.loadui.jcelery</Export-Package>
+                        <Export-Package></Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -37,6 +37,11 @@
         </plugins>
     </build>
     <dependencies>
+        <dependency>
+            <groupId>org.loadui</groupId>
+            <artifactId>jobs-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
