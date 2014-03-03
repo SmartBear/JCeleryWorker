@@ -12,6 +12,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>jobs-api</module>
         <module>jcelery</module>
         <module>jcelery-test</module>
     </modules>
