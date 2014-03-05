@@ -4,17 +4,17 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
                            http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi-1.0.xsd" >
 
-    <osgi:service interface="org.loadui.jcelery.JobService" ref="jobService"/>
+    <osgi:service interface="org.loadui.jcelery.JobService" ref="jobService" />
 
-    <osgi:service interface="org.loadui.jcelery.ConnectionProvider" ref="connectionProvider"/>
+    <osgi:service interface="org.loadui.jcelery.ConnectionProvider" ref="connectionProvider" />
 
-    <osgi:service interface="org.loadui.jcelery.MessageConsumer" ref="revokeConsumer">
+    <osgi:service interface="org.loadui.jcelery.MessageConsumer" ref="revokeConsumer" >
         <service-properties>
             <entry key="type" value="revoke"/>
         </service-properties>
     </osgi:service>
 
-    <osgi:service interface="org.loadui.jcelery.MessageConsumer" ref="invokeConsumer">
+    <osgi:service interface="org.loadui.jcelery.MessageConsumer" ref="invokeConsumer" >
         <service-properties>
             <entry key="type" value="invoke"/>
         </service-properties>
@@ -22,7 +22,7 @@
 
     <osgi:reference id="connection" interface="org.loadui.jcelery.ConnectionProvider" cardinality="0..1" />
 
-    <osgi:reference id="anInvokeConsumer" interface="org.loadui.jcelery.MessageConsumer" cardinality="0..1" filter="(type=invoke)" />
-    <osgi:reference id="anRevokeConsumer" interface="org.loadui.jcelery.MessageConsumer" cardinality="0..1" filter="(type=revoke)" />
+    <osgi:reference id="anyInvokeConsumer" interface="org.loadui.jcelery.MessageConsumer" cardinality="0..1" filter="(type=invoke)"/>
+    <osgi:reference id="anyRevokeConsumer" interface="org.loadui.jcelery.MessageConsumer" cardinality="0..1" filter="(type=revoke)"/>
 
 </beans>

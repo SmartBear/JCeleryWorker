@@ -12,6 +12,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>jobs-api</module>
         <module>jcelery</module>
         <module>jcelery-test</module>
     </modules>
@@ -44,13 +45,11 @@
                 <groupId>com.rabbitmq</groupId>
                 <artifactId>amqp-client</artifactId>
                 <version>3.2.2</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.googlecode.json-simple</groupId>
                 <artifactId>json-simple</artifactId>
                 <version>1.1.1</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>

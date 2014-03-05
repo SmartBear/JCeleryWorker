@@ -12,4 +12,6 @@ public interface JobService
 	void startService();
 
 	void stopService();
+
+	void replaceConnection( ConnectionProvider provider, MessageConsumer invokeConsumer, MessageConsumer revokeConsumer );
 }

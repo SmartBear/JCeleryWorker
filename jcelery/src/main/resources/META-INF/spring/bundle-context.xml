@@ -16,12 +16,12 @@
 
     <bean id="revokeWorker" class="org.loadui.jcelery.worker.RevokeWorker">
         <constructor-arg ref="connection" />
-        <constructor-arg ref="anRevokeConsumer" />
+        <constructor-arg ref="anyRevokeConsumer" />
     </bean>
 
     <bean id="invokeWorker" class="org.loadui.jcelery.worker.InvokeWorker">
         <constructor-arg ref="connection"/>
-        <constructor-arg ref="anInvokeConsumer"/>
+        <constructor-arg ref="anyInvokeConsumer"/>
     </bean>
 
     <bean id="jobService" class="org.loadui.jcelery.base.CeleryService">

@@ -2,7 +2,6 @@ package org.loadui.jcelery;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.loadui.jcelery.JobService;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -12,7 +11,6 @@ import org.osgi.framework.BundleContext;
 
 import javax.inject.Inject;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.loadui.jcelery.test.OsgiTestUtils.assertAllBundlesActive;
@@ -24,7 +22,7 @@ import static org.ops4j.pax.exam.CoreOptions.*;
  */
 @RunWith( PaxExam.class )
 @ExamReactorStrategy( PerClass.class )
-public class JJobServiceTest
+public class JobServiceTest
 {
 
 	@Inject
@@ -48,7 +46,10 @@ public class JJobServiceTest
 				springDmBundles(),
 				junitBundles(),
 				mavenBundle( "com.google.guava", "guava" ).versionAsInProject(),
-				mavenBundle( "org.loadui", "jcelery" ).versionAsInProject()
+				mavenBundle( "org.loadui", "jobs-api" ).versionAsInProject(),
+				mavenBundle( "org.loadui", "jcelery" ).versionAsInProject(),
+				mavenBundle( "com.rabbitmq", "amqp-client" ).versionAsInProject(),
+				mavenBundle( "com.googlecode.json-simple", "json-simple" ).versionAsInProject()
 		);
 	}
 

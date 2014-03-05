@@ -1,6 +1,7 @@
 package org.loadui.jcelery.worker;
 
 import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Consumer;
 import org.loadui.jcelery.ConnectionProvider;
 import org.loadui.jcelery.Exchange;
@@ -31,33 +32,37 @@ public class InvokeWorker extends AbstractWorker
 
 	public void respond( String id, String response ) throws IOException
 	{
-		getChannel().queueDeclare( getExchange(), true, false, false, new HashMap<String, Object>() );
+		Channel channel = getChannel();
+		channel.queueDeclare( getExchange(), true, false, false, new HashMap<String, Object>() );
 		AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
-		getChannel().basicPublish( "", getExchange(), props, response.getBytes() );
+		channel.basicPublish( "", getExchange(), props, response.getBytes() );
 	}
 
 	@Override
 	public void run() throws Exception
 	{
 		createConnectionIfRequired();
+		Channel channel = getChannel();
 
-		Consumer rabbitConsumer = getMessageConsumer().initialize( getChannel() );
-
-		getChannel().queueDeclare( getQueue(), true, false, false, new HashMap<String, Object>() );
-		getChannel().basicConsume( getQueue(), true, rabbitConsumer );
-
+		if( channel != null )
+		{
+			Consumer rabbitConsumer = getMessageConsumer().initialize( channel );
+			channel.queueDeclare( getQueue(), true, false, false, new HashMap<String, Object>() );
+			channel.basicConsume( getQueue(), true, rabbitConsumer );
+		}
 		while( isRunning() )
 		{
-
 			String message = getMessageConsumer().nextMessage();
-
 			try
 			{
-				InvokeJob task = InvokeJob.fromJson( message, this );
-
-				if( onJob != null && task != null )
+				if( message != null )
 				{
-					onJob.handle( task ); // This is blocking!
+					InvokeJob task = InvokeJob.fromJson( message, this );
+
+					if( onJob != null && task != null )
+					{
+						onJob.handle( task ); // This is blocking!
+					}
 				}
 			}
 			catch( NullPointerException e )

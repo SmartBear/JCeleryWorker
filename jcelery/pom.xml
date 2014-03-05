@@ -21,8 +21,7 @@
                 <version>${mavenBundlePluginVersion}</version>
                 <configuration>
                     <instructions>
-                        <Export-Package>org.loadui.jcelery</Export-Package>
-                        <Embed-Dependency>*;scope=provided</Embed-Dependency>
+                        <Export-Package></Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -39,19 +38,21 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>org.loadui</groupId>
+            <artifactId>jobs-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -72,12 +73,7 @@
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>com.springsource.slf4j.api</artifactId>
-            <version>${slf4jVersion}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>com.springsource.slf4j.simple</artifactId>
+            <artifactId>slf4j-api</artifactId>
             <version>${slf4jVersion}</version>
         </dependency>
     </dependencies>
