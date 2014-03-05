@@ -41,23 +41,25 @@ public class InvokeWorker extends AbstractWorker
 	{
 		createConnectionIfRequired();
 
-		Consumer rabbitConsumer = getMessageConsumer().initialize( getChannel() );
-
-		getChannel().queueDeclare( getQueue(), true, false, false, new HashMap<String, Object>() );
-		getChannel().basicConsume( getQueue(), true, rabbitConsumer );
-
+		if( getChannel() != null )
+		{
+			Consumer rabbitConsumer = getMessageConsumer().initialize( getChannel() );
+			getChannel().queueDeclare( getQueue(), true, false, false, new HashMap<String, Object>() );
+			getChannel().basicConsume( getQueue(), true, rabbitConsumer );
+		}
 		while( isRunning() )
 		{
-
 			String message = getMessageConsumer().nextMessage();
-
 			try
 			{
-				InvokeJob task = InvokeJob.fromJson( message, this );
-
-				if( onJob != null && task != null )
+				if( message != null )
 				{
-					onJob.handle( task ); // This is blocking!
+					InvokeJob task = InvokeJob.fromJson( message, this );
+
+					if( onJob != null && task != null )
+					{
+						onJob.handle( task ); // This is blocking!
+					}
 				}
 			}
 			catch( NullPointerException e )

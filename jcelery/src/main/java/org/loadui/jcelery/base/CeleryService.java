@@ -1,6 +1,8 @@
 package org.loadui.jcelery.base;
 
+import org.loadui.jcelery.ConnectionProvider;
 import org.loadui.jcelery.JobService;
+import org.loadui.jcelery.MessageConsumer;
 import org.loadui.jcelery.TaskHandler;
 import org.loadui.jcelery.worker.InvokeWorker;
 import org.loadui.jcelery.worker.RevokeWorker;
@@ -65,5 +67,27 @@ public class CeleryService implements JobService
 			worker.stopAsynchronous();
 			worker.waitUntilTerminated();
 		}
+	}
+
+	@Override
+	public void replaceConnection( ConnectionProvider provider, MessageConsumer invokeConsumer, MessageConsumer revokeConsumer )
+	{
+		stopService();
+
+		TaskHandler<?> revokeHandler = revokeWorker.getTaskHandler();
+		TaskHandler<?> invokeHandler = invokeWorker.getTaskHandler();
+
+		workers.clear();
+
+		invokeWorker = new InvokeWorker( provider, invokeConsumer );
+		revokeWorker = new RevokeWorker( provider, revokeConsumer );
+
+		invokeWorker.setTaskHandler( invokeHandler );
+		revokeWorker.setTaskHandler( revokeHandler );
+
+		workers.add( invokeWorker );
+		workers.add( revokeWorker );
+
+		startService();
 	}
 }

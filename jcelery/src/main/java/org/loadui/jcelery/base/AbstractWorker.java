@@ -3,28 +3,34 @@ package org.loadui.jcelery.base;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import org.loadui.jcelery.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.concurrent.*;
 
 public abstract class AbstractWorker extends AbstractExecutionThreadService
 {
 	protected TaskHandler onJob;
 	private Connection connection;
 	private Channel channel;
-	private final ConnectionProvider connectionFactory;
+	private ConnectionProvider connectionProvider;
 	private final Queue queue;
 	private final Exchange exchange;
-	private final MessageConsumer consumer;
+	private MessageConsumer consumer;
+	private ExecutorService executor;
 
-	public AbstractWorker( ConnectionProvider connectionFactory, MessageConsumer consumer,
+	Logger log = LoggerFactory.getLogger( AbstractWorker.class );
+
+	public AbstractWorker( ConnectionProvider connectionProvider, MessageConsumer consumer,
 								  Queue queue, Exchange exchange )
 	{
-		this.connectionFactory = connectionFactory;
+		this.connectionProvider = connectionProvider;
 		this.queue = queue;
 		this.exchange = exchange;
 		this.consumer = consumer;
+		this.executor = Executors.newSingleThreadExecutor();
 	}
 
 	public AbstractWorker( String host,
@@ -35,11 +41,41 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 
 	protected void createConnectionIfRequired() throws IOException
 	{
-		if( getConnection() == null && getConnectionFactory() != null )
+		if( ( getConnection() == null && getConnectionProvider() != null ) )
 		{
-			connection = connectionFactory.getFactory().newConnection();
-			channel = connection.createChannel();
+			Callable<Connection> task = new Callable<Connection>()
+			{
+				@Override
+				public Connection call() throws Exception
+				{
+					return connectionProvider.getFactory().newConnection();
+				}
+			};
+
+			Future<Connection> future = executor.submit( task );
+			try
+			{
+				connection = future.get( 3, TimeUnit.SECONDS );
+				channel = connection.createChannel();
+			}
+			catch( Exception e )
+			{
+				channel = null;
+				connection = null;
+				stopAsync();
+			}
 		}
+	}
+
+
+	public void setConnectionProvider( ConnectionProvider provider )
+	{
+		this.connectionProvider = provider;
+	}
+
+	public void setMessageConsumer( MessageConsumer consumer )
+	{
+		this.consumer = consumer;
 	}
 
 	public void setTaskHandler( TaskHandler<?> handler )
@@ -86,6 +122,11 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 		return exchange.getExchange();
 	}
 
+	public TaskHandler<?> getTaskHandler()
+	{
+		return onJob;
+	}
+
 	public Channel getChannel()
 	{
 		return channel;
@@ -101,8 +142,8 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 		return connection;
 	}
 
-	public ConnectionProvider getConnectionFactory()
+	public ConnectionProvider getConnectionProvider()
 	{
-		return connectionFactory;
+		return connectionProvider;
 	}
 }

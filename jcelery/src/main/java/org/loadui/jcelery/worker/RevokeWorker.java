@@ -41,25 +41,27 @@ public class RevokeWorker extends AbstractWorker
 	{
 		createConnectionIfRequired();
 
-		getChannel().exchangeDeclare( getQueue(), "fanout" );
-		getChannel().queueDeclare( getQueue(), true, false, false, null );
-		getChannel().queueBind( getQueue(), getQueue(), "" );
-		Consumer rabbitConsumer = getMessageConsumer().initialize( getChannel() );
+		if( getChannel() != null )
+		{
+			getChannel().exchangeDeclare( getQueue(), "fanout" );
+			getChannel().queueDeclare( getQueue(), true, false, false, null );
+			getChannel().queueBind( getQueue(), getQueue(), "" );
 
-		getChannel().basicConsume( getQueue(), true, rabbitConsumer );
-
+			Consumer rabbitConsumer = getMessageConsumer().initialize( getChannel() );
+			getChannel().basicConsume( getQueue(), true, rabbitConsumer );
+		}
 		while( isRunning() )
 		{
-
 			String message = getMessageConsumer().nextMessage();
-
 			try
 			{
-				RevokeJob task = RevokeJob.fromJson( message, this );
-
-				if( onJob != null )
+				if( message != null )
 				{
-					onJob.handle( task ); // This is blocking!
+					RevokeJob task = RevokeJob.fromJson( message, this );
+					if( onJob != null )
+					{
+						onJob.handle( task ); // This is blocking!
+					}
 				}
 			}
 			catch( NullPointerException e )
