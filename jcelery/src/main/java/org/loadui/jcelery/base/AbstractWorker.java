@@ -64,6 +64,8 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 				connection = null;
 				stopAsync();
 			}
+		}else if( getConnectionProvider() == null){
+			log.error( "Attempted to open a new connection, but could not find a connection-provider" );
 		}
 	}
 

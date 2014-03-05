@@ -1,6 +1,7 @@
 package org.loadui.jcelery.worker;
 
 import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Consumer;
 import org.loadui.jcelery.ConnectionProvider;
 import org.loadui.jcelery.Exchange;
@@ -31,24 +32,26 @@ public class RevokeWorker extends AbstractWorker
 	@Override
 	public void respond( String id, String response ) throws IOException
 	{
+		Channel channel = getChannel();
 		AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
-		getChannel().queueDeclare( getExchange(), true, false, false, new HashMap<String, Object>() );
-		getChannel().basicPublish( "", getExchange(), props, response.getBytes() );
+		channel.queueDeclare( getExchange(), true, false, false, new HashMap<String, Object>() );
+		channel.basicPublish( "", getExchange(), props, response.getBytes() );
 	}
 
 	@Override
 	protected void run() throws Exception
 	{
 		createConnectionIfRequired();
+		Channel channel = getChannel();
 
-		if( getChannel() != null )
+		if( channel != null )
 		{
-			getChannel().exchangeDeclare( getQueue(), "fanout" );
-			getChannel().queueDeclare( getQueue(), true, false, false, null );
-			getChannel().queueBind( getQueue(), getQueue(), "" );
+			channel.exchangeDeclare( getQueue(), "fanout" );
+			channel.queueDeclare( getQueue(), true, false, false, null );
+			channel.queueBind( getQueue(), getQueue(), "" );
 
-			Consumer rabbitConsumer = getMessageConsumer().initialize( getChannel() );
-			getChannel().basicConsume( getQueue(), true, rabbitConsumer );
+			Consumer rabbitConsumer = getMessageConsumer().initialize( channel );
+			channel.basicConsume( getQueue(), true, rabbitConsumer );
 		}
 		while( isRunning() )
 		{
