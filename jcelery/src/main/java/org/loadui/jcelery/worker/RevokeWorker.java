@@ -100,7 +100,7 @@ public class RevokeWorker extends AbstractWorker
 			}
 			catch( Exception e )
 			{
-				log.error( "job could not be handled, is it the correct format? Supported formats: [JSON], Non-supported formats: [ Pickle, MessagePack, XML ]", e );
+				log.error( "Critical error, unable to inform the caller about failure.", e );
 			}
 		}
 	}
