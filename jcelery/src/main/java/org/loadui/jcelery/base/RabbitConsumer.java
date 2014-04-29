@@ -1,13 +1,15 @@
 package org.loadui.jcelery.base;
 
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Consumer;
-import com.rabbitmq.client.QueueingConsumer;
+import com.rabbitmq.client.*;
 import org.loadui.jcelery.MessageConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RabbitConsumer implements MessageConsumer
 {
 	private QueueingConsumer consumer;
+
+	private Logger log = LoggerFactory.getLogger( MessageConsumer.class );
 
 	@Override
 	public String nextMessage()
@@ -19,10 +21,11 @@ public class RabbitConsumer implements MessageConsumer
 		}
 		catch( InterruptedException e )
 		{
-			e.printStackTrace();
-			return new String();
+			log.error( "Communication interrupted", e );
 		}
+		return null;
 	}
+
 
 	@Override
 	public Consumer initialize( Channel channel )

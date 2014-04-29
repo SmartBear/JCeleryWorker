@@ -57,6 +57,7 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 			{
 				connection = future.get( 3, TimeUnit.SECONDS );
 				channel = connection.createChannel();
+				consumer.initialize( channel );
 			}
 			catch( Exception e )
 			{
@@ -68,7 +69,6 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 			log.error( "Attempted to open a new connection, but could not find a connection-provider" );
 		}
 	}
-
 
 	public void setConnectionProvider( ConnectionProvider provider )
 	{
@@ -147,5 +147,25 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 	public ConnectionProvider getConnectionProvider()
 	{
 		return connectionProvider;
+	}
+
+
+	protected final int DEFAULT_TIMEOUT = 2000;
+	protected void waitAndReconnect()
+	{
+		try
+		{
+			Thread.sleep( DEFAULT_TIMEOUT );
+			connection = null;
+			createConnectionIfRequired();
+		}
+		catch( InterruptedException e )
+		{
+			//Silent
+		}catch( IOException e ){
+			log.error( "Unable to create connection to broker. ",e );
+		}
+
+
 	}
 }

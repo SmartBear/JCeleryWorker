@@ -1,8 +1,6 @@
 package org.loadui.jcelery.worker;
 
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Consumer;
+import com.rabbitmq.client.*;
 import org.loadui.jcelery.ConnectionProvider;
 import org.loadui.jcelery.Exchange;
 import org.loadui.jcelery.MessageConsumer;
@@ -32,10 +30,13 @@ public class RevokeWorker extends AbstractWorker
 	@Override
 	public void respond( String id, String response ) throws IOException
 	{
+		log.debug( getClass().getSimpleName() + ": Trying to respond " + response + " for job " + id );
+
 		Channel channel = getChannel();
-		AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
+   	AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
 		channel.queueDeclare( getExchange(), true, false, false, new HashMap<String, Object>() );
 		channel.basicPublish( "", getExchange(), props, response.getBytes() );
+
 	}
 
 	@Override
@@ -55,21 +56,49 @@ public class RevokeWorker extends AbstractWorker
 		}
 		while( isRunning() )
 		{
+			log.debug( getClass().getSimpleName() + "Waiting for tasks" );
 			String message = getMessageConsumer().nextMessage();
 			try
 			{
 				if( message != null )
 				{
-					RevokeJob task = RevokeJob.fromJson( message, this );
-					if( onJob != null )
+					log.debug( "Received message: " + message );
+					if( message.contains( "\"method\": \"revoke\"" ) )
 					{
-						onJob.handle( task ); // This is blocking!
+						RevokeJob task = RevokeJob.fromJson( message, this );
+						if( onJob != null )
+						{
+							log.info( "Handling task: " + message );
+							onJob.handle( task ); // This is blocking!
+						}
+					}
+					else if( message.contains( "\"method\": \"dump_conf\"" ) )
+					{
+						log.debug( "asked by Celery to dump configuration, not yet supported by JCeleryWorker" );
+					}
+					else if( message.contains( "\"method\": \"heartbeat\"" ) )
+					{
+						log.debug( "asked by Celery to provide a heartbeat, not yet supported by JCeleryWorker" );
 					}
 				}
 			}
 			catch( NullPointerException e )
 			{
-				log.error( "job could not be parsed, is it the correct format? Supported formats: [JSON], Non-supported formats: [ Pickle, MessagePack, XML ]" );
+				log.error( "Message could not be parsed, is it the correct format? Supported formats: [JSON], Non-supported formats: [ Pickle, MessagePack, XML ]", e );
+			}
+			catch( ShutdownSignalException e )
+			{
+				log.error( "Broker shutdown detected, retrying connection in " + DEFAULT_TIMEOUT / 1000 + " seconds", e );
+				waitAndReconnect();
+			}
+			catch( ConsumerCancelledException e )
+			{
+				log.info( "Consumer cancelled", e );
+				waitAndReconnect();
+			}
+			catch( Exception e )
+			{
+				log.error( "Critical error, unable to inform the caller about failure.", e );
 			}
 		}
 	}

@@ -1,8 +1,6 @@
 package org.loadui.jcelery.worker;
 
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Consumer;
+import com.rabbitmq.client.*;
 import org.loadui.jcelery.ConnectionProvider;
 import org.loadui.jcelery.Exchange;
 import org.loadui.jcelery.MessageConsumer;
@@ -32,6 +30,7 @@ public class InvokeWorker extends AbstractWorker
 
 	public void respond( String id, String response ) throws IOException
 	{
+		log.debug( getClass().getSimpleName() + ": Trying to respond " + response + " for job " + id );
 		Channel channel = getChannel();
 		channel.queueDeclare( getExchange(), true, false, false, new HashMap<String, Object>() );
 		AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
@@ -52,23 +51,41 @@ public class InvokeWorker extends AbstractWorker
 		}
 		while( isRunning() )
 		{
+			log.debug( getClass().getSimpleName() + "Waiting for tasks" );
 			String message = getMessageConsumer().nextMessage();
 			try
 			{
 				if( message != null )
 				{
+					log.debug( "Received message: " + message );
+
 					InvokeJob task = InvokeJob.fromJson( message, this );
 
 					if( onJob != null && task != null )
 					{
+						log.info( "Handling task: " + message );
 						onJob.handle( task ); // This is blocking!
 					}
 				}
 			}
 			catch( NullPointerException e )
 			{
-				log.error( "job could not be parsed, is it the correct format? Supported formats: [JSON], Non-supported formats: [ Pickle, MessagePack, XML ]" );
+				log.error( "Message could not be parsed, is it the correct format? Supported formats: [JSON], Non-supported formats: [ Pickle, MessagePack, XML ]", e );
 			}
+			catch( ShutdownSignalException e )
+			{
+				log.error( "Broker shutdown detected, retrying connection in " + DEFAULT_TIMEOUT / 1000 + " seconds", e );
+
+			}
+			catch( ConsumerCancelledException e )
+			{
+				log.info( "Consumer cancelled", e );
+			}
+			catch( Exception e )
+			{
+				log.error( "Critical error, unable to inform the caller about failure.", e );
+			}
+
 		}
 	}
 }
