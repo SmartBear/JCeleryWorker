@@ -30,19 +30,11 @@ public class InvokeWorker extends AbstractWorker
 
 	public void respond( String id, String response ) throws IOException
 	{
-		System.out.println( getClass().getSimpleName() + ": Trying to respond " + response + " for job " + id );
+		log.debug( getClass().getSimpleName() + ": Trying to respond " + response + " for job " + id );
 		Channel channel = getChannel();
-
-		if( channel != null )
-		{
-			channel.queueDeclare( getExchange(), true, false, false, new HashMap<String, Object>() );
-			AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
-			channel.basicPublish( "", getExchange(), props, response.getBytes() );
-		}
-		else
-		{
-			log.error( "Unable to respond to message " + id + " with message: " + response + " channel is unavailable." );
-		}
+		channel.queueDeclare( getExchange(), true, false, false, new HashMap<String, Object>() );
+		AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
+		channel.basicPublish( "", getExchange(), props, response.getBytes() );
 	}
 
 	@Override
@@ -91,7 +83,7 @@ public class InvokeWorker extends AbstractWorker
 			}
 			catch( Exception e )
 			{
-				log.error( "job could not be handled, is it the correct format? Supported formats: [JSON], Non-supported formats: [ Pickle, MessagePack, XML ]", e );
+				log.error( "Critical error, unable to inform the caller about failure.", e );
 			}
 
 		}
