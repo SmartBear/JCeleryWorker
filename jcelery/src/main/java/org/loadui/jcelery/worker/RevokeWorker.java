@@ -33,16 +33,10 @@ public class RevokeWorker extends AbstractWorker
 		log.debug( getClass().getSimpleName() + ": Trying to respond " + response + " for job " + id );
 
 		Channel channel = getChannel();
-		if( channel != null )
-		{
-			AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
-			channel.queueDeclare( getExchange(), true, false, false, new HashMap<String, Object>() );
-			channel.basicPublish( "", getExchange(), props, response.getBytes() );
-		}
-		else
-		{
-			log.error( "Unable to respond to message " + id + " with message: " + response + " channel is unavailable." );
-		}
+   	AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
+		channel.queueDeclare( getExchange(), true, false, false, new HashMap<String, Object>() );
+		channel.basicPublish( "", getExchange(), props, response.getBytes() );
+
 	}
 
 	@Override
@@ -69,7 +63,7 @@ public class RevokeWorker extends AbstractWorker
 				if( message != null )
 				{
 					log.debug( "Received message: " + message );
-					if(message.contains( "\"method\": \"revoke\"" ))
+					if( message.contains( "\"method\": \"revoke\"" ) )
 					{
 						RevokeJob task = RevokeJob.fromJson( message, this );
 						if( onJob != null )
@@ -77,9 +71,13 @@ public class RevokeWorker extends AbstractWorker
 							log.info( "Handling task: " + message );
 							onJob.handle( task ); // This is blocking!
 						}
-					}else if(message.contains( "\"method\": \"dump_conf\"" )){
+					}
+					else if( message.contains( "\"method\": \"dump_conf\"" ) )
+					{
 						log.debug( "asked by Celery to dump configuration, not yet supported by JCeleryWorker" );
-					}else if(message.contains( "\"method\": \"heartbeat\"" )){
+					}
+					else if( message.contains( "\"method\": \"heartbeat\"" ) )
+					{
 						log.debug( "asked by Celery to provide a heartbeat, not yet supported by JCeleryWorker" );
 					}
 				}
