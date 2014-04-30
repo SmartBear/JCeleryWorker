@@ -7,11 +7,13 @@ public class RabbitProvider implements ConnectionProvider
 {
 	private ConnectionFactory connectionFactory;
 
-	public RabbitProvider( String host )
+	public RabbitProvider( String host, int port, String username, String password  )
 	{
-
 		this.connectionFactory = new ConnectionFactory();
 		this.connectionFactory.setHost( host );
+		this.connectionFactory.setPort( port );
+		this.connectionFactory.setUsername( username );
+		this.connectionFactory.setPassword( password );
 	}
 
 	public ConnectionFactory getFactory()

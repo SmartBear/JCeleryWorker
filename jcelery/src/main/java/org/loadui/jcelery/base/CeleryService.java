@@ -12,6 +12,7 @@ import java.util.List;
 
 public class CeleryService implements JobService
 {
+
 	private List<AbstractWorker> workers;
 
 	private AbstractWorker revokeWorker;
@@ -25,16 +26,12 @@ public class CeleryService implements JobService
 		this.invokeWorker = invoker;
 		this.workers.add( invokeWorker );
 		this.workers.add( revokeWorker );
+
 	}
 
-	public CeleryService( String host )
+	public CeleryService( String host, int port, String username, String password  )
 	{
-		this( new InvokeWorker( host ), new RevokeWorker( host ) );
-	}
-
-	public CeleryService()
-	{
-		this( "localhost" );
+		this( new InvokeWorker( host, port, username, password ), new RevokeWorker( host, port, username, password ) );
 	}
 
 	@Override

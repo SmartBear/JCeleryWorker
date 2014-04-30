@@ -11,6 +11,8 @@ import org.osgi.framework.BundleContext;
 
 import javax.inject.Inject;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.loadui.jcelery.test.OsgiTestUtils.assertAllBundlesActive;
@@ -30,6 +32,9 @@ public class JobServiceTest
 
 	@Inject
 	JobService celeryService;
+
+	@Inject
+	ConnectionProvider connectionProvider;
 
 	@Configuration
 	public Option[] config()
@@ -71,6 +76,13 @@ public class JobServiceTest
 	public void celeryServiceIsExposed()
 	{
 		assertThat( celeryService, notNullValue() );
+	}
+
+	@Test
+	public void celeryServiceUsesDefaultMqConnection()
+	{
+		assertThat( "should have default host defined in bundle context", connectionProvider.getFactory().getHost(), is( equalTo("platform") ) );
+		assertThat( "should have default port defined in bundle context", connectionProvider.getFactory().getPort(), is( equalTo(5672) ) );
 	}
 
 }
