@@ -3,20 +3,31 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
+
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="searchSystemEnvironment" value="true"/>
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_FALLBACK"/>
+    </bean>
+
     <bean id="mq-host" class="java.lang.String">
-        <constructor-arg value="loadlocal" />
+        <constructor-arg value="${MQ_HOST:platform}"/>
+    </bean>
+
+    <bean id="mq-port" class="java.lang.Integer">
+        <constructor-arg value="${MQ_PORT:5672}"/>
     </bean>
 
     <bean id="connectionProvider" class="org.loadui.jcelery.base.RabbitProvider">
         <constructor-arg ref="mq-host"/>
+        <constructor-arg ref="mq-port"/>
     </bean>
 
     <bean id="revokeConsumer" class="org.loadui.jcelery.base.RabbitConsumer"/>
     <bean id="invokeConsumer" class="org.loadui.jcelery.base.RabbitConsumer"/>
 
     <bean id="revokeWorker" class="org.loadui.jcelery.worker.RevokeWorker">
-        <constructor-arg ref="connection" />
-        <constructor-arg ref="anyRevokeConsumer" />
+        <constructor-arg ref="connection"/>
+        <constructor-arg ref="anyRevokeConsumer"/>
     </bean>
 
     <bean id="invokeWorker" class="org.loadui.jcelery.worker.InvokeWorker">

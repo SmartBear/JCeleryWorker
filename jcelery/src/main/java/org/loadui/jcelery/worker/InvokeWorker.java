@@ -18,9 +18,9 @@ public class InvokeWorker extends AbstractWorker
 
 	Logger log = LoggerFactory.getLogger( RevokeWorker.class );
 
-	public InvokeWorker( String host )
+	public InvokeWorker( String host, int port )
 	{
-		super( host, Queue.CELERY, Exchange.RESULTS );
+		super( host, port, Queue.CELERY, Exchange.RESULTS );
 	}
 
 	public InvokeWorker( ConnectionProvider connectionFactory, MessageConsumer consumer )

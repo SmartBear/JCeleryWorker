@@ -33,10 +33,10 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 		this.executor = Executors.newSingleThreadExecutor();
 	}
 
-	public AbstractWorker( String host,
+	public AbstractWorker( String host, int port,
 								  Queue queue, Exchange exchange )
 	{
-		this( new RabbitProvider( host ), new RabbitConsumer(), queue, exchange );
+		this( new RabbitProvider( host, port ), new RabbitConsumer(), queue, exchange );
 	}
 
 	protected void createConnectionIfRequired() throws IOException
