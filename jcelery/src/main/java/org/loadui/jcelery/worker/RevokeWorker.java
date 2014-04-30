@@ -17,9 +17,9 @@ public class RevokeWorker extends AbstractWorker
 {
 	Logger log = LoggerFactory.getLogger( RevokeWorker.class );
 
-	public RevokeWorker( String host, int port )
+	public RevokeWorker( String host, int port, String username, String password )
 	{
-		super( host, port, Queue.REVOKE, Exchange.RESULTS );
+		super( host, port, username, password, Queue.REVOKE, Exchange.RESULTS );
 	}
 
 	public RevokeWorker( ConnectionProvider connectionFactory, MessageConsumer consumer )
@@ -33,7 +33,7 @@ public class RevokeWorker extends AbstractWorker
 		log.debug( getClass().getSimpleName() + ": Trying to respond " + response + " for job " + id );
 
 		Channel channel = getChannel();
-   	AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
+		AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
 		channel.queueDeclare( getExchange(), true, false, false, new HashMap<String, Object>() );
 		channel.basicPublish( "", getExchange(), props, response.getBytes() );
 

@@ -15,12 +15,11 @@ import java.util.HashMap;
 
 public class InvokeWorker extends AbstractWorker
 {
-
 	Logger log = LoggerFactory.getLogger( RevokeWorker.class );
 
-	public InvokeWorker( String host, int port )
+	public InvokeWorker( String host, int port, String username, String password )
 	{
-		super( host, port, Queue.CELERY, Exchange.RESULTS );
+		super( host, port, username, password, Queue.CELERY, Exchange.RESULTS );
 	}
 
 	public InvokeWorker( ConnectionProvider connectionFactory, MessageConsumer consumer )

@@ -29,14 +29,9 @@ public class CeleryService implements JobService
 
 	}
 
-	public CeleryService( String host, int port  )
+	public CeleryService( String host, int port, String username, String password  )
 	{
-		this( new InvokeWorker( host, port ), new RevokeWorker( host, port ) );
-	}
-
-	public CeleryService()
-	{
-		this("localhost", 5672);
+		this( new InvokeWorker( host, port, username, password ), new RevokeWorker( host, port, username, password ) );
 	}
 
 	@Override

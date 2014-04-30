@@ -17,9 +17,20 @@
         <constructor-arg value="${MQ_PORT:5672}"/>
     </bean>
 
+    <bean id="mq-username" class="java.lang.String">
+        <constructor-arg value="${MQ_USERNAME:guest}"/>
+    </bean>
+
+    <bean id="mq-password" class="java.lang.String">
+        <constructor-arg value="${MQ_PASSWORD:guest}"/>
+    </bean>
+
+
     <bean id="connectionProvider" class="org.loadui.jcelery.base.RabbitProvider">
         <constructor-arg ref="mq-host"/>
         <constructor-arg ref="mq-port"/>
+        <constructor-arg ref="mq-username"/>
+        <constructor-arg ref="mq-password"/>
     </bean>
 
     <bean id="revokeConsumer" class="org.loadui.jcelery.base.RabbitConsumer"/>
