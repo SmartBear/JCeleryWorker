@@ -14,7 +14,7 @@
     </bean>
 
     <bean id="mq-port" class="java.lang.Integer">
-        <constructor-arg value="${RABBITMQ_PORT:15672}"/>
+        <constructor-arg value="${RABBITMQ_PORT:5672}"/>
     </bean>
 
     <bean id="mq-username" class="java.lang.String">
