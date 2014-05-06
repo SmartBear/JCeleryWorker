@@ -10,19 +10,19 @@
     </bean>
 
     <bean id="mq-host" class="java.lang.String">
-        <constructor-arg value="${MQ_HOST:platform}"/>
+        <constructor-arg value="${RABBITMQ_HOST:platform}"/>
     </bean>
 
     <bean id="mq-port" class="java.lang.Integer">
-        <constructor-arg value="${MQ_PORT:5672}"/>
+        <constructor-arg value="${RABBITMQ_PORT:15672}"/>
     </bean>
 
     <bean id="mq-username" class="java.lang.String">
-        <constructor-arg value="${MQ_USERNAME:guest}"/>
+        <constructor-arg value="${RABBITMQ_USERNAME:guest}"/>
     </bean>
 
     <bean id="mq-password" class="java.lang.String">
-        <constructor-arg value="${MQ_PASSWORD:guest}"/>
+        <constructor-arg value="${RABBITMQ_PASSWORD:guest}"/>
     </bean>
 
 
