@@ -14,7 +14,7 @@
     </bean>
 
     <bean id="mq-port" class="java.lang.Integer">
-        <constructor-arg value="${RABBITMQ_PORT:15672}"/>
+        <constructor-arg value="${RABBITMQ_PORT:5672}"/>
     </bean>
 
     <bean id="mq-username" class="java.lang.String">
@@ -25,12 +25,16 @@
         <constructor-arg value="${RABBITMQ_PASSWORD:guest}"/>
     </bean>
 
+    <bean id="mq-vhost" class="java.lang.String" >
+        <constructor-arg value="${RABBITMQ_VHOST:/}"/>
+    </bean>
 
     <bean id="connectionProvider" class="org.loadui.jcelery.base.RabbitProvider">
         <constructor-arg ref="mq-host"/>
         <constructor-arg ref="mq-port"/>
         <constructor-arg ref="mq-username"/>
         <constructor-arg ref="mq-password"/>
+        <constructor-arg ref="mq-vhost"/>
     </bean>
 
     <bean id="revokeConsumer" class="org.loadui.jcelery.base.RabbitConsumer"/>
