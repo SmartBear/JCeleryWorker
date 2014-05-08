@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
-
+       xmlns:bp="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+  http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="searchSystemEnvironment" value="true"/>
@@ -25,12 +33,16 @@
         <constructor-arg value="${RABBITMQ_PASSWORD:guest}"/>
     </bean>
 
+    <bean id="mq-vhost" class="java.lang.String" >
+        <constructor-arg value="${RABBITMQ_VHOST:/}"/>
+    </bean>
 
     <bean id="connectionProvider" class="org.loadui.jcelery.base.RabbitProvider">
         <constructor-arg ref="mq-host"/>
         <constructor-arg ref="mq-port"/>
         <constructor-arg ref="mq-username"/>
         <constructor-arg ref="mq-password"/>
+        <constructor-arg ref="mq-vhost"/>
     </bean>
 
     <bean id="revokeConsumer" class="org.loadui.jcelery.base.RabbitConsumer"/>
