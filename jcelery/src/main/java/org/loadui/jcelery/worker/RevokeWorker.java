@@ -17,9 +17,9 @@ public class RevokeWorker extends AbstractWorker
 {
 	Logger log = LoggerFactory.getLogger( RevokeWorker.class );
 
-	public RevokeWorker( String host, int port, String username, String password )
+	public RevokeWorker( String host, int port, String username, String password, String vhost )
 	{
-		super( host, port, username, password, Queue.REVOKE, Exchange.RESULTS );
+		super( host, port, username, password, vhost, Queue.REVOKE, Exchange.RESULTS );
 	}
 
 	public RevokeWorker( ConnectionProvider connectionFactory, MessageConsumer consumer )
