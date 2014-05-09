@@ -14,7 +14,7 @@ public class DemoApp
 	public static void main( String[] _ ) throws Exception
 	{
 
-		JobService celeryService = new CeleryService("localhost", 5672, "guest", "guest");
+		JobService celeryService = new CeleryService("localhost", 5672, "guest", "guest", "/");
 		celeryService.setInvokeHandler( new TaskHandler<InvokeJob>()
 		{
 			@Override
