@@ -1,6 +1,7 @@
 package org.loadui.jcelery.base;
 
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
+import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import org.loadui.jcelery.*;
@@ -109,8 +110,17 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 		return this;
 	}
 
+	public void respond( String id, String response ) throws IOException
+	{
+		log.debug( getClass().getSimpleName() + ": Trying to respond " + response + " for job " + id );
+		String rabbitId = id.replaceAll( "-", "" );
 
-	public abstract void respond( String id, String response ) throws IOException;
+		Channel channel = getChannel();
+
+		AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
+		channel.exchangeDeclare( getExchange(), "direct", false, false, null );
+		channel.basicPublish( getExchange(), rabbitId, properties, response.getBytes());
+	}
 
 	protected abstract void run() throws Exception;
 

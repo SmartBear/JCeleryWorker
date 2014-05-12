@@ -27,15 +27,6 @@ public class InvokeWorker extends AbstractWorker
 		super( connectionFactory, consumer, Queue.CELERY, Exchange.RESULTS );
 	}
 
-	public void respond( String id, String response ) throws IOException
-	{
-		log.debug( getClass().getSimpleName() + ": Trying to respond " + response + " for job " + id );
-		Channel channel = getChannel();
-		channel.queueDeclare( getExchange(), true, false, false, new HashMap<String, Object>() );
-		AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
-		channel.basicPublish( "", getExchange(), props, response.getBytes() );
-	}
-
 	@Override
 	public void run() throws Exception
 	{
