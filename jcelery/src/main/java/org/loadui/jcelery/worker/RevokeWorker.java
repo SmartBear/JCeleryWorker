@@ -28,19 +28,6 @@ public class RevokeWorker extends AbstractWorker
 	}
 
 	@Override
-	public void respond( String id, String response ) throws IOException
-	{
-		log.debug( getClass().getSimpleName() + ": Trying to respond " + response + " for job " + id );
-		String rabbitId = id.replaceAll( "-", "" );
-
-		Channel channel = getChannel();
-
-		AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
-		channel.exchangeDeclare( getExchange(), "direct", false, false, null );
-		channel.basicPublish( getExchange(), rabbitId, properties, response.getBytes());
-	}
-
-	@Override
 	protected void run() throws Exception
 	{
 		createConnectionIfRequired();
