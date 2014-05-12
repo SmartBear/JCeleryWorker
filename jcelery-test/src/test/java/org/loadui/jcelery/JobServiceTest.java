@@ -23,7 +23,6 @@ import static org.ops4j.pax.exam.CoreOptions.*;
 @ExamReactorStrategy( PerClass.class )
 public class JobServiceTest
 {
-
 	@Inject
 	BundleContext context;
 
