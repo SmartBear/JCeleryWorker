@@ -18,14 +18,10 @@ import static org.loadui.jcelery.test.OsgiTestUtils.assertAllBundlesActive;
 import static org.loadui.jcelery.test.OsgiTestUtils.springDmBundles;
 import static org.ops4j.pax.exam.CoreOptions.*;
 
-/**
- * @author renato
- */
-@RunWith( PaxExam.class )
-@ExamReactorStrategy( PerClass.class )
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
 public class JCeleryServiceTest
 {
-
 	@Inject
 	BundleContext context;
 

@@ -8,7 +8,7 @@ public interface JobService
 
 	void setTaskHandler( TaskHandler<?> handler );
 
-	JobService 	startAsynchronous();
+	JobService startAsynchronous();
 
 	JobService waitUntilRunning();
 

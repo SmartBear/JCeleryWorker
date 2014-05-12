@@ -11,7 +11,8 @@ import static org.loadui.jcelery.Status.SUCCESS;
 
 public class DemoApp
 {
-	public static void main(String[] _)	throws Exception {
+	public static void main( String[] _ ) throws Exception
+	{
 
 		JobService celeryService = new CeleryService();
 		celeryService.setTaskHandler( new TaskHandler<CeleryTask>()
@@ -21,7 +22,8 @@ public class DemoApp
 			{
 				switch( t.task )
 				{
-					case "tasks.add": t.complete( SUCCESS, add(t) );
+					case "tasks.add":
+						t.complete( SUCCESS, add( t ) );
 				}
 			}
 		} );
@@ -35,10 +37,10 @@ public class DemoApp
 		celeryService.waitUntilTerminated();
 	}
 
-	private static long add(CeleryTask t)
+	private static long add( CeleryTask t )
 	{
-		long x = (long) t.args.get( 0 );
-		long y = (long) t.args.get( 1 );
+		long x = ( long )t.args.get( 0 );
+		long y = ( long )t.args.get( 1 );
 		return x + y;
 	}
 

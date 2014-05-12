@@ -4,11 +4,11 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
     <bean id="mq-host" class="java.lang.String">
-        <constructor-arg value="localhost" />
+        <constructor-arg value="localhost"/>
     </bean>
 
     <bean id="celeryService" class="org.loadui.jcelery.internal.CeleryService">
-        <constructor-arg ref="mq-host" />
+        <constructor-arg ref="mq-host"/>
     </bean>
 
 </beans>
