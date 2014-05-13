@@ -1,0 +1,6 @@
+<FindBugsFilter>
+    <Match>
+        <!-- Ignores bugs with rank lower than 14; i.e. bugs with rank 15-20. -->
+        <Rank value="14"/>
+    </Match>
+</FindBugsFilter>
