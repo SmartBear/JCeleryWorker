@@ -51,13 +51,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.loadui</groupId>
-                        <artifactId>jcelery-build-tools</artifactId>
-                        <version>0.2.0-SNAPSHOT</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
