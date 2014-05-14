@@ -12,7 +12,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>build-tools</module>
         <module>jobs-api</module>
         <module>jcelery</module>
         <module>jcelery-test</module>
@@ -43,7 +42,7 @@
                 <version>2.5.4-SNAPSHOT</version>
                 <configuration>
                     <includeTests>true</includeTests>
-                    <excludeFilterFile>findbugs/findbugs-exclude.xml</excludeFilterFile>
+                    <maxRank>14</maxRank>
                 </configuration>
                 <executions>
                     <execution>
