@@ -11,9 +11,7 @@ import org.osgi.framework.BundleContext;
 
 import javax.inject.Inject;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.loadui.jcelery.test.OsgiTestUtils.assertAllBundlesActive;
 import static org.loadui.jcelery.test.OsgiTestUtils.springDmBundles;
@@ -22,8 +20,8 @@ import static org.ops4j.pax.exam.CoreOptions.*;
 /**
  * @author renato
  */
-@RunWith( PaxExam.class )
-@ExamReactorStrategy( PerClass.class )
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
 public class JobServiceTest
 {
 
@@ -59,10 +57,11 @@ public class JobServiceTest
 				springDmBundles(),
 				junitBundles(),
 				mavenBundle( "com.google.guava", "guava" ).versionAsInProject(),
-				mavenBundle( "org.loadui", "jobs-api" ).versionAsInProject(),
-				mavenBundle( "org.loadui", "jcelery" ).versionAsInProject(),
 				mavenBundle( "com.rabbitmq", "amqp-client" ).versionAsInProject(),
-				mavenBundle( "com.googlecode.json-simple", "json-simple" ).versionAsInProject()
+				mavenBundle( "com.googlecode.json-simple", "json-simple" ).versionAsInProject(),
+				provision(
+						mavenBundle( "org.loadui", "jobs-api" ).versionAsInProject(),
+						mavenBundle( "org.loadui", "jcelery" ).versionAsInProject() )
 		);
 	}
 
@@ -81,8 +80,8 @@ public class JobServiceTest
 	@Test
 	public void celeryServiceUsesDefaultMqConnection()
 	{
-		assertThat( "should have default host defined in bundle context", connectionProvider.getFactory().getHost(), is( equalTo("platform") ) );
-		assertThat( "should have default port defined in bundle context", connectionProvider.getFactory().getPort(), is( equalTo(5672) ) );
+		assertThat( "should have default host defined in bundle context", connectionProvider.getFactory().getHost(), is( equalTo( "platform" ) ) );
+		assertThat( "should have default port defined in bundle context", connectionProvider.getFactory().getPort(), is( equalTo( 5672 ) ) );
 	}
 
 }
