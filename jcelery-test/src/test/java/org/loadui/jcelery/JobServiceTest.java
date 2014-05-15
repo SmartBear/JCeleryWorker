@@ -40,7 +40,6 @@ public class JobServiceTest
 	public Option[] config()
 	{
 		return options(
-				repository( "http://nexus.sthlm.smartbear.local:8081/content/repositories/next" ).id( "next" ),
 				systemPackages(
 						"com.sun.crypto.provider",
 						"com.sun.net.ssl",
