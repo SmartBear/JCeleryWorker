@@ -56,10 +56,11 @@ public class JobServiceTest
 				springDmBundles(),
 				junitBundles(),
 				mavenBundle( "com.google.guava", "guava" ).versionAsInProject(),
-				mavenBundle( "org.loadui", "jobs-api" ).versionAsInProject(),
-				mavenBundle( "org.loadui", "jcelery" ).versionAsInProject(),
 				mavenBundle( "com.rabbitmq", "amqp-client" ).versionAsInProject(),
-				mavenBundle( "com.googlecode.json-simple", "json-simple" ).versionAsInProject()
+				mavenBundle( "com.googlecode.json-simple", "json-simple" ).versionAsInProject(),
+				provision(
+						mavenBundle( "org.loadui", "jobs-api" ).versionAsInProject(),
+						mavenBundle( "org.loadui", "jcelery" ).versionAsInProject() )
 		);
 	}
 
