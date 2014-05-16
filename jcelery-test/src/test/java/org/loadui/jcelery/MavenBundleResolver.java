@@ -23,14 +23,18 @@ public class MavenBundleResolver
 
 	public static UrlProvisionOption jCeleryCore()
 	{
-		Path targetFolder = Paths.get( "jcelery", "target" );
-		return resolveJar( targetFolder, "jcelery" );
+		return resolveJar( findTargetDirectory( "jcelery" ), "jcelery" );
 	}
 
 	public static UrlProvisionOption jobsApi()
 	{
-		Path targetFolder = Paths.get( "jobs-api", "target" );
-		return resolveJar( targetFolder, "jobs-api" );
+		return resolveJar( findTargetDirectory( "jobs-api" ), "jobs-api" );
+	}
+
+	protected static Path findTargetDirectory( String module )
+	{
+		return attemptToLocateJCeleryDirectory()
+				.resolve( Paths.get( module, "target" ) );
 	}
 
 	protected static UrlProvisionOption resolveJar( Path targetFolder, final String nameStart )
@@ -46,11 +50,27 @@ public class MavenBundleResolver
 			}
 			catch( MalformedURLException e )
 			{
-				System.out.println("Shit happended: " + e);
+				System.out.println( "Shit happended: " + e );
 				log.warn( "Problem resolving bundle " + nameStart, e );
 			}
 		}
 		throw new UnresolvedAddressException();
+	}
+
+	private static Path attemptToLocateJCeleryDirectory()
+	{
+		Path workingDir = Paths.get( "" ).toAbsolutePath();
+		String workingDirName = workingDir.getFileName().toString();
+		System.out.println("WorkingDir is " + workingDirName);
+		if( workingDirName.equals( "jcelery-test" ) )
+		{
+			return workingDir.getParent();
+		}
+		if( workingDirName.equals( "jcelery" ) )
+		{
+			return workingDir;
+		}
+		throw new RuntimeException( "Could not guess where the JCelery working directory is" );
 	}
 
 
