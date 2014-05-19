@@ -11,10 +11,10 @@ import org.osgi.framework.BundleContext;
 
 import javax.inject.Inject;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.loadui.jcelery.LocalBundleResolver.jCeleryCore;
+import static org.loadui.jcelery.LocalBundleResolver.jobsApi;
 import static org.loadui.jcelery.test.OsgiTestUtils.assertAllBundlesActive;
 import static org.loadui.jcelery.test.OsgiTestUtils.springDmBundles;
 import static org.ops4j.pax.exam.CoreOptions.*;
@@ -55,12 +55,12 @@ public class JobServiceTest
 						"org.w3c.dom",
 						"org.xml.sax",
 						"javax.security.auth.callback",
-						"sun.misc" ),
-				springDmBundles(),
+				"sun.misc" ),
+		springDmBundles(),
 				junitBundles(),
+				jobsApi(),
+				jCeleryCore(),
 				mavenBundle( "com.google.guava", "guava" ).versionAsInProject(),
-				mavenBundle( "org.loadui", "jobs-api" ).versionAsInProject(),
-				mavenBundle( "org.loadui", "jcelery" ).versionAsInProject(),
 				mavenBundle( "com.rabbitmq", "amqp-client" ).versionAsInProject(),
 				mavenBundle( "com.googlecode.json-simple", "json-simple" ).versionAsInProject()
 		);
