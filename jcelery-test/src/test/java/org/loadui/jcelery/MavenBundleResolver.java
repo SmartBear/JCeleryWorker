@@ -8,10 +8,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.net.MalformedURLException;
-import java.nio.channels.UnresolvedAddressException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 /**
  * This class is only necessary here because Pax Exam does not seem to be able to resolve bundles in our CI server
@@ -33,15 +31,20 @@ public class MavenBundleResolver
 
 	protected static Path findTargetDirectory( String module )
 	{
-		return attemptToLocateJCeleryDirectory()
-				.resolve( Paths.get( module, "target" ) );
+		Path jCeleryDir = attemptToLocateJCeleryDirectoryFrom( testWorkingDirectory(), true );
+		if( jCeleryDir != null )
+		{
+			return jCeleryDir.resolve( Paths.get( module, "target" ) );
+		}
+		else
+		{
+			throw new RuntimeException( "Could not guess where the JCelery working directory is" );
+		}
 	}
 
 	protected static UrlProvisionOption resolveJar( Path targetFolder, final String nameStart )
 	{
-		System.out.println( "Target folder: " + targetFolder.toAbsolutePath() );
 		File[] candidateFiles = targetFolder.toFile().listFiles( new FileFilter( nameStart ) );
-		System.out.println( "Found files: " + Arrays.toString( candidateFiles ) );
 		if( candidateFiles != null && candidateFiles.length > 0 )
 		{
 			try
@@ -50,18 +53,22 @@ public class MavenBundleResolver
 			}
 			catch( MalformedURLException e )
 			{
-				System.out.println( "Shit happended: " + e );
 				log.warn( "Problem resolving bundle " + nameStart, e );
 			}
 		}
-		throw new UnresolvedAddressException();
+		throw new RuntimeException( "Could not resolve project bundle with name starting with " + nameStart );
 	}
 
-	private static Path attemptToLocateJCeleryDirectory()
+	private static Path attemptToLocateJCeleryDirectoryFrom( Path workingDir, boolean lookIntoChildren )
 	{
-		Path workingDir = Paths.get( "" ).toAbsolutePath();
+		if( !workingDir.toFile().isDirectory() )
+		{
+			return null;
+		}
 		String workingDirName = workingDir.getFileName().toString();
-		System.out.println("WorkingDir is " + workingDirName);
+
+		log.debug( "WorkingDir is {}", workingDirName );
+
 		if( workingDirName.equals( "jcelery-test" ) )
 		{
 			return workingDir.getParent();
@@ -70,7 +77,22 @@ public class MavenBundleResolver
 		{
 			return workingDir;
 		}
-		throw new RuntimeException( "Could not guess where the JCelery working directory is" );
+		File[] children = workingDir.toFile().listFiles();
+		if( children != null )
+		{
+			for( File child : children )
+			{
+				Path found = attemptToLocateJCeleryDirectoryFrom( child.toPath(), false );
+				if( found != null )
+					return found;
+			}
+		}
+		return null;
+	}
+
+	private static Path testWorkingDirectory()
+	{
+		return Paths.get( "" ).toAbsolutePath();
 	}
 
 

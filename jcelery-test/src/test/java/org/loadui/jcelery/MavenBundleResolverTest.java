@@ -28,6 +28,17 @@ public class MavenBundleResolverTest
 		assertNotNull( options );
 	}
 
+	@Test( expected = RuntimeException.class )
+	public void throwsRuntimeExceptionIfCannotResolveJar() throws Exception
+	{
+		Path tempDirectory = createTempDirectory();
+		Path tempFile = tempDirectory.resolve( "myBundle-1.0-SNAPSHOT.jar" );
+		boolean createOk = tempFile.toFile().createNewFile();
+		assertThat( createOk, is( true ) );
+
+		MavenBundleResolver.resolveJar( tempDirectory, "wrong" );
+	}
+
 	private Path createTempDirectory() throws IOException
 	{
 		Path tempDirectory = Files.createTempDirectory(
@@ -35,7 +46,5 @@ public class MavenBundleResolverTest
 		assertThat( tempDirectory.toFile().exists(), is( true ) );
 		return tempDirectory;
 	}
-
-
 
 }
