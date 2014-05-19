@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jcelery-parent</artifactId>
         <groupId>org.loadui</groupId>
-        <version>0.2.0-SNAPSHOT</version>
+        <version>0.2.0</version>
     </parent>
     <packaging>bundle</packaging>
     <modelVersion>4.0.0</modelVersion>
