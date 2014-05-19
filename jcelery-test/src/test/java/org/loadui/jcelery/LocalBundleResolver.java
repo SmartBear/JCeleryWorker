@@ -15,9 +15,9 @@ import java.nio.file.Paths;
  * This class is only necessary here because Pax Exam does not seem to be able to resolve bundles in our CI server
  * (Jenkins), where the Maven repo is kept private and makes use of Maven profiles to isolate builds
  */
-public class MavenBundleResolver
+public class LocalBundleResolver
 {
-	static final Logger log = LoggerFactory.getLogger( MavenBundleResolver.class );
+	static final Logger log = LoggerFactory.getLogger( LocalBundleResolver.class );
 
 	public static UrlProvisionOption jCeleryCore()
 	{

@@ -13,8 +13,8 @@ import javax.inject.Inject;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static org.loadui.jcelery.MavenBundleResolver.jCeleryCore;
-import static org.loadui.jcelery.MavenBundleResolver.jobsApi;
+import static org.loadui.jcelery.LocalBundleResolver.jCeleryCore;
+import static org.loadui.jcelery.LocalBundleResolver.jobsApi;
 import static org.loadui.jcelery.test.OsgiTestUtils.assertAllBundlesActive;
 import static org.loadui.jcelery.test.OsgiTestUtils.springDmBundles;
 import static org.ops4j.pax.exam.CoreOptions.*;

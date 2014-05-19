@@ -10,9 +10,9 @@ import java.nio.file.Path;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.loadui.jcelery.MavenBundleResolver.findTargetDirectory;
+import static org.loadui.jcelery.LocalBundleResolver.findTargetDirectory;
 
-public class MavenBundleResolverTest
+public class LocalBundleResolverTest
 {
 
 	@Test
@@ -23,7 +23,7 @@ public class MavenBundleResolverTest
 		boolean createOk = tempFile.toFile().createNewFile();
 		assertThat( createOk, is( true ) );
 
-		UrlProvisionOption options = MavenBundleResolver.resolveJar( tempDirectory, "myBundle" );
+		UrlProvisionOption options = LocalBundleResolver.resolveJar( tempDirectory, "myBundle" );
 
 		assertNotNull( options );
 	}
@@ -36,7 +36,7 @@ public class MavenBundleResolverTest
 		boolean createOk = tempFile.toFile().createNewFile();
 		assertThat( createOk, is( true ) );
 
-		MavenBundleResolver.resolveJar( tempDirectory, "wrong" );
+		LocalBundleResolver.resolveJar( tempDirectory, "wrong" );
 	}
 
 	private Path createTempDirectory() throws IOException
