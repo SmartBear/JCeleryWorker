@@ -1,15 +1,13 @@
 package org.loadui.jcelery.base;
 
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.*;
 import org.loadui.jcelery.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.concurrent.*;
+import java.util.HashMap;
 
 public abstract class AbstractWorker extends AbstractExecutionThreadService
 {
@@ -20,63 +18,60 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 	private final Queue queue;
 	private final Exchange exchange;
 	private MessageConsumer consumer;
-	private ExecutorService executor;
+	private Logger log = LoggerFactory.getLogger( this.getClass() );
 
-	Logger log = LoggerFactory.getLogger( AbstractWorker.class );
+	private static final boolean AMQP_INITIATED_BY_APPLICATION = true;
+	private static final boolean AMQP_HARD_ERROR = true;
+	private static final boolean AMQP_REQUEUE = true;
+	private static final boolean AMQP_DURABLE = true;
+	private static final boolean AMQP_EXCLUSIVE = false;
+	private static final boolean AMQP_AUTO_DELETE = false;
+	private static final boolean AMQP_AUTO_ACK = false;
 
-	public AbstractWorker( ConnectionProvider connectionProvider, MessageConsumer consumer,
+	public AbstractWorker( ConnectionProvider connectionProvider,
 								  Queue queue, Exchange exchange )
 	{
 		this.connectionProvider = connectionProvider;
 		this.queue = queue;
 		this.exchange = exchange;
-		this.consumer = consumer;
-		this.executor = Executors.newSingleThreadExecutor();
 	}
 
 	public AbstractWorker( String host, int port, String username, String password, String vhost,
 								  Queue queue, Exchange exchange )
 	{
-		this( new RabbitProvider( host, port, username, password, vhost ), new RabbitConsumer(), queue, exchange );
+		this( new RabbitProvider( host, port, username, password, vhost ), queue, exchange );
 	}
 
-	protected void createConnectionIfRequired() throws IOException
+	protected void connect() throws IOException, ShutdownSignalException
 	{
-		if( ( getConnection() == null && getConnectionProvider() != null ) )
+      if( consumer != null && consumer.isMock() )
 		{
-			Callable<Connection> task = new Callable<Connection>()
-			{
-				@Override
-				public Connection call() throws Exception
-				{
-					return connectionProvider.getFactory().newConnection();
-				}
-			};
-
-			Future<Connection> future = executor.submit( task );
-			try
-			{
-				connection = future.get( 3, TimeUnit.SECONDS );
-				channel = connection.createChannel();
-				consumer.initialize( channel );
-			}
-			catch( Exception e )
-			{
-				channel = null;
-				connection = null;
-				stopAsync();
-			}
-		}else if( getConnectionProvider() == null){
-			log.error( "Attempted to open a new connection, but could not find a connection-provider" );
+			connection = connectionProvider.getFactory().newConnection();
+			channel = connection.createChannel();
+			return;
 		}
+
+		log.debug( "Connecting to rabbitMQ broker: " + connectionProvider.getFactory().getHost() + ":" + connectionProvider.getFactory().getPort() );
+
+		if( connection == null )
+		{
+			connection = connectionProvider.getFactory().newConnection();
+			channel = connection.createChannel();
+			consumer = new RabbitConsumer( channel );
+		}
+		else
+		{
+			channel.abort();
+			channel = connection.createChannel();
+			consumer = new RabbitConsumer( channel );
+			channel.basicRecover( true );
+		}
+		channel.queueDeclare( getQueue(), AMQP_DURABLE, AMQP_EXCLUSIVE, AMQP_AUTO_DELETE, new HashMap<String, Object>() );
+		channel.basicConsume( getQueue(), AMQP_AUTO_ACK, consumer.getConsumer() );
 	}
 
-	public void setConnectionProvider( ConnectionProvider provider )
-	{
-		this.connectionProvider = provider;
-	}
 
-	public void setMessageConsumer( MessageConsumer consumer )
+	public void replaceConnection( MessageConsumer consumer )
 	{
 		this.consumer = consumer;
 	}
@@ -115,11 +110,21 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 		log.debug( getClass().getSimpleName() + ": Trying to respond " + response + " for job " + id );
 		String rabbitId = id.replaceAll( "-", "" );
 
-		Channel channel = getChannel();
-
 		AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
 		channel.exchangeDeclare( getExchange(), "direct", false, false, null );
-		channel.basicPublish( getExchange(), rabbitId, properties, response.getBytes());
+		channel.basicPublish( getExchange(), rabbitId, properties, response.getBytes() );
+	}
+
+	private void nackMessage( QueueingConsumer.Delivery delivery )
+	{
+		try
+		{
+			getChannel().basicNack( delivery.getEnvelope().getDeliveryTag(), false, true );
+		}
+		catch( IOException e )
+		{
+			log.error( "unable to nack message" );
+		}
 	}
 
 	protected abstract void run() throws Exception;
@@ -159,23 +164,12 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 		return connectionProvider;
 	}
 
-
-	protected final int DEFAULT_TIMEOUT = 2000;
-	protected void waitAndReconnect()
+	protected void waitAndRecover( int timeout ) throws InterruptedException, IOException
 	{
-		try
-		{
-			Thread.sleep( DEFAULT_TIMEOUT );
-			connection = null;
-			createConnectionIfRequired();
-		}
-		catch( InterruptedException e )
-		{
-			//Silent
-		}catch( IOException e ){
-			log.error( "Unable to create connection to broker. ",e );
-		}
-
-
+		Thread.sleep( timeout );
+		log.debug( "Attempting connection recovery" );
+		connect();
 	}
+
+	protected abstract void initialConnection() throws InterruptedException;
 }

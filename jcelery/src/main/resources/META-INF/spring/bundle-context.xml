@@ -37,17 +37,12 @@
         <constructor-arg ref="mq-vhost"/>
     </bean>
 
-    <bean id="revokeConsumer" class="org.loadui.jcelery.base.RabbitConsumer"/>
-    <bean id="invokeConsumer" class="org.loadui.jcelery.base.RabbitConsumer"/>
-
     <bean id="revokeWorker" class="org.loadui.jcelery.worker.RevokeWorker">
         <constructor-arg ref="connection"/>
-        <constructor-arg ref="anyRevokeConsumer"/>
     </bean>
 
     <bean id="invokeWorker" class="org.loadui.jcelery.worker.InvokeWorker">
         <constructor-arg ref="connection"/>
-        <constructor-arg ref="anyInvokeConsumer"/>
     </bean>
 
     <bean id="jobService" class="org.loadui.jcelery.base.CeleryService">

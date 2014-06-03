@@ -8,21 +8,6 @@
 
     <osgi:service interface="org.loadui.jcelery.ConnectionProvider" ref="connectionProvider" />
 
-    <osgi:service interface="org.loadui.jcelery.MessageConsumer" ref="revokeConsumer" >
-        <service-properties>
-            <entry key="type" value="revoke"/>
-        </service-properties>
-    </osgi:service>
-
-    <osgi:service interface="org.loadui.jcelery.MessageConsumer" ref="invokeConsumer" >
-        <service-properties>
-            <entry key="type" value="invoke"/>
-        </service-properties>
-    </osgi:service>
-
     <osgi:reference id="connection" interface="org.loadui.jcelery.ConnectionProvider" cardinality="0..1" />
-
-    <osgi:reference id="anyInvokeConsumer" interface="org.loadui.jcelery.MessageConsumer" cardinality="0..1" filter="(type=invoke)"/>
-    <osgi:reference id="anyRevokeConsumer" interface="org.loadui.jcelery.MessageConsumer" cardinality="0..1" filter="(type=revoke)"/>
 
 </beans>

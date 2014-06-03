@@ -1,6 +1,9 @@
 package org.loadui.jcelery.base;
 
-import com.rabbitmq.client.*;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Consumer;
+import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.QueueingConsumer;
 import org.loadui.jcelery.MessageConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,14 +14,28 @@ public class RabbitConsumer implements MessageConsumer
 
 	private Logger log = LoggerFactory.getLogger( MessageConsumer.class );
 
+	public RabbitConsumer( Channel channel )
+	{
+		log.debug( "Initialized" );
+		consumer = new QueueingConsumer( channel );
+	}
+
 	@Override
-	public String nextMessage()
+	public QueueingConsumer.Delivery nextMessage()
+	{
+		return nextMessage( 20000 );
+	}
+
+	@Override
+	public QueueingConsumer.Delivery nextMessage( int timeout )
 	{
 		try
 		{
-			String message = new String( consumer.nextDelivery().getBody() );
-			return message;
-		}
+			QueueingConsumer.Delivery delivery = consumer.nextDelivery( timeout );
+			if( delivery != null ){
+				return delivery;
+			}
+ 		}
 		catch( InterruptedException e )
 		{
 			log.error( "Communication interrupted", e );
@@ -26,11 +43,16 @@ public class RabbitConsumer implements MessageConsumer
 		return null;
 	}
 
-
 	@Override
-	public Consumer initialize( Channel channel )
+	public Consumer getConsumer()
 	{
-		consumer = new QueueingConsumer( channel );
 		return consumer;
 	}
-}
+
+	@Override
+	public boolean isMock()
+	{
+		return false;
+	}
+
+   }

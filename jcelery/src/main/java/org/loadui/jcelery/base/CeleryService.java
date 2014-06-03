@@ -26,10 +26,9 @@ public class CeleryService implements JobService
 		this.invokeWorker = invoker;
 		this.workers.add( invokeWorker );
 		this.workers.add( revokeWorker );
-
 	}
 
-	public CeleryService( String host, int port, String username, String password, String vhost  )
+	public CeleryService( String host, int port, String username, String password, String vhost )
 	{
 		this( new InvokeWorker( host, port, username, password, vhost ), new RevokeWorker( host, port, username, password, vhost ) );
 	}
@@ -69,6 +68,7 @@ public class CeleryService implements JobService
 	@Override
 	public void replaceConnection( ConnectionProvider provider, MessageConsumer invokeConsumer, MessageConsumer revokeConsumer )
 	{
+		if( invokeWorker.isRunning() || revokeWorker.isRunning() )
 		stopService();
 
 		TaskHandler<?> revokeHandler = revokeWorker.getTaskHandler();
@@ -76,8 +76,10 @@ public class CeleryService implements JobService
 
 		workers.clear();
 
-		invokeWorker = new InvokeWorker( provider, invokeConsumer );
-		revokeWorker = new RevokeWorker( provider, revokeConsumer );
+		invokeWorker = new InvokeWorker( provider );
+		invokeWorker.replaceConnection( invokeConsumer );
+		revokeWorker = new RevokeWorker( provider );
+		revokeWorker.replaceConnection( revokeConsumer );
 
 		invokeWorker.setTaskHandler( invokeHandler );
 		revokeWorker.setTaskHandler( revokeHandler );
