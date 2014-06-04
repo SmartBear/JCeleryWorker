@@ -1,17 +1,18 @@
 package org.loadui.jcelery.worker;
 
 import com.rabbitmq.client.AlreadyClosedException;
+import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.ShutdownSignalException;
-import org.loadui.jcelery.ConnectionProvider;
-import org.loadui.jcelery.Exchange;
-import org.loadui.jcelery.Queue;
+import org.loadui.jcelery.*;
 import org.loadui.jcelery.base.AbstractWorker;
+import org.loadui.jcelery.base.RabbitConsumer;
 import org.loadui.jcelery.tasks.InvokeJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 public class InvokeWorker extends AbstractWorker
 {
@@ -22,9 +23,9 @@ public class InvokeWorker extends AbstractWorker
 		super( host, port, username, password, vhost, Queue.CELERY, Exchange.RESULTS );
 	}
 
-	public InvokeWorker( ConnectionProvider connectionFactory )
+	public InvokeWorker( ConnectionProvider connectionFactory, ConsumerProvider consumerProvider )
 	{
-		super( connectionFactory, Queue.CELERY, Exchange.RESULTS );
+		super( connectionFactory, consumerProvider, Queue.CELERY, Exchange.RESULTS );
 	}
 
 	@Override
@@ -36,7 +37,7 @@ public class InvokeWorker extends AbstractWorker
 			log.debug( " waiting for tasks" );
 			try
 			{
-				QueueingConsumer.Delivery delivery = getMessageConsumer().nextMessage( 500 );
+				QueueingConsumer.Delivery delivery = getConsumer().nextMessage( 500 );
 				if( delivery != null )
 				{
 					String message = new String( delivery.getBody() );
@@ -75,6 +76,12 @@ public class InvokeWorker extends AbstractWorker
 				log.error( "Critical error, unable to inform the caller about failure.", e );
 			}
 		}
+	}
+
+	@Override
+	protected MessageConsumer replaceConsumer( Channel channel ) throws IOException, ShutdownSignalException
+	{
+		return getConsumerProvider().getInvokeConsumer( channel );
 	}
 
 	@Override

@@ -4,9 +4,7 @@ import com.rabbitmq.client.AlreadyClosedException;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.ShutdownSignalException;
-import org.loadui.jcelery.ConnectionProvider;
-import org.loadui.jcelery.Exchange;
-import org.loadui.jcelery.Queue;
+import org.loadui.jcelery.*;
 import org.loadui.jcelery.base.AbstractWorker;
 import org.loadui.jcelery.tasks.RevokeJob;
 import org.slf4j.Logger;
@@ -23,9 +21,9 @@ public class RevokeWorker extends AbstractWorker
 		super( host, port, username, password, vhost, Queue.REVOKE, Exchange.RESULTS );
 	}
 
-	public RevokeWorker( ConnectionProvider connectionFactory )
+	public RevokeWorker( ConnectionProvider connectionFactory, ConsumerProvider consumerProvider )
 	{
-		super( connectionFactory, Queue.REVOKE, Exchange.RESULTS );
+		super( connectionFactory, consumerProvider, Queue.REVOKE, Exchange.RESULTS );
 	}
 
 	@Override
@@ -37,7 +35,7 @@ public class RevokeWorker extends AbstractWorker
 			try
 			{
 				log.debug( " waiting for tasks" );
-				QueueingConsumer.Delivery delivery = getMessageConsumer().nextMessage( 500 );
+				QueueingConsumer.Delivery delivery = getConsumer().nextMessage( 500 );
 				if( delivery != null )
 				{
 					String message = new String( delivery.getBody() );
@@ -72,7 +70,7 @@ public class RevokeWorker extends AbstractWorker
 			}
 			catch( IOException | AlreadyClosedException e )
 			{
-				log.warn( "Lost rabbitMQ connection" );
+				log.info( "Lost rabbitMQ connection" );
 			}
 			catch( ShutdownSignalException e )
 			{
@@ -91,6 +89,12 @@ public class RevokeWorker extends AbstractWorker
 				log.error( "Critical error, unable to inform the caller about failure.", e );
 			}
 		}
+	}
+
+	@Override
+	protected MessageConsumer replaceConsumer( Channel channel ) throws IOException, ShutdownSignalException
+	{
+		return getConsumerProvider().getRevokeConsumer( channel );
 	}
 
 	@Override

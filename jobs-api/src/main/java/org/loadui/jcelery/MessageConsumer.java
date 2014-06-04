@@ -14,6 +14,4 @@ public interface MessageConsumer
 	public QueueingConsumer.Delivery nextMessage( int timeout );
 
    public Consumer getConsumer();
-
-	public boolean isMock();
 }

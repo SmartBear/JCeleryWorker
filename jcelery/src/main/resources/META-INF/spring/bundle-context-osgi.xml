@@ -10,4 +10,6 @@
 
     <osgi:reference id="connection" interface="org.loadui.jcelery.ConnectionProvider" cardinality="0..1" />
 
+    <osgi:service interface="org.loadui.jcelery.ConsumerProvider" ref="consumerProvider" />
+
 </beans>

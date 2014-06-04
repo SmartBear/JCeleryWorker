@@ -3,14 +3,14 @@ package org.loadui.jcelery.base;
 import com.rabbitmq.client.ConnectionFactory;
 import org.loadui.jcelery.ConnectionProvider;
 
-public class RabbitProvider implements ConnectionProvider
+public class RabbitConnectionProvider implements ConnectionProvider
 {
 	private ConnectionFactory connectionFactory;
 
-	public RabbitProvider( String host, int port, String username, String password, String vhost )
+	public RabbitConnectionProvider( String host, int port, String username, String password, String vhost )
 	{
 		this.connectionFactory = new ConnectionFactory();
-		this.connectionFactory.setConnectionTimeout( 500 );
+		this.connectionFactory.setConnectionTimeout( 2000 );
 		this.connectionFactory.setVirtualHost( vhost );
 		this.connectionFactory.setHost( host );
 		this.connectionFactory.setPort( port );
