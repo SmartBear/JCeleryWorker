@@ -1,8 +1,8 @@
 package org.loadui.jcelery.base;
 
 import org.loadui.jcelery.ConnectionProvider;
+import org.loadui.jcelery.ConsumerProvider;
 import org.loadui.jcelery.JobService;
-import org.loadui.jcelery.MessageConsumer;
 import org.loadui.jcelery.TaskHandler;
 import org.loadui.jcelery.worker.InvokeWorker;
 import org.loadui.jcelery.worker.RevokeWorker;
@@ -26,10 +26,9 @@ public class CeleryService implements JobService
 		this.invokeWorker = invoker;
 		this.workers.add( invokeWorker );
 		this.workers.add( revokeWorker );
-
 	}
 
-	public CeleryService( String host, int port, String username, String password, String vhost  )
+	public CeleryService( String host, int port, String username, String password, String vhost )
 	{
 		this( new InvokeWorker( host, port, username, password, vhost ), new RevokeWorker( host, port, username, password, vhost ) );
 	}
@@ -67,17 +66,29 @@ public class CeleryService implements JobService
 	}
 
 	@Override
-	public void replaceConnection( ConnectionProvider provider, MessageConsumer invokeConsumer, MessageConsumer revokeConsumer )
+	public boolean isServiceRunning()
 	{
-		stopService();
+		for( AbstractWorker worker : workers ){
+			if ( !worker.isRunning() ){
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public void replaceConnection( ConnectionProvider provider, ConsumerProvider consumerProvider )
+	{
+		if( invokeWorker.isRunning() || revokeWorker.isRunning() )
+			stopService();
 
 		TaskHandler<?> revokeHandler = revokeWorker.getTaskHandler();
 		TaskHandler<?> invokeHandler = invokeWorker.getTaskHandler();
 
 		workers.clear();
 
-		invokeWorker = new InvokeWorker( provider, invokeConsumer );
-		revokeWorker = new RevokeWorker( provider, revokeConsumer );
+		invokeWorker = new InvokeWorker( provider, consumerProvider );
+		revokeWorker = new RevokeWorker( provider, consumerProvider );
 
 		invokeWorker.setTaskHandler( invokeHandler );
 		revokeWorker.setTaskHandler( revokeHandler );

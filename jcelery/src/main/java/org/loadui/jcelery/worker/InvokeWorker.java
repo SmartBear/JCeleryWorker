@@ -1,81 +1,102 @@
 package org.loadui.jcelery.worker;
 
-import com.rabbitmq.client.*;
-import org.loadui.jcelery.ConnectionProvider;
-import org.loadui.jcelery.Exchange;
-import org.loadui.jcelery.MessageConsumer;
-import org.loadui.jcelery.Queue;
+import com.rabbitmq.client.AlreadyClosedException;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.QueueingConsumer;
+import com.rabbitmq.client.ShutdownSignalException;
+import org.loadui.jcelery.*;
 import org.loadui.jcelery.base.AbstractWorker;
 import org.loadui.jcelery.tasks.InvokeJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 public class InvokeWorker extends AbstractWorker
 {
-	Logger log = LoggerFactory.getLogger( RevokeWorker.class );
+	Logger log = LoggerFactory.getLogger( InvokeWorker.class );
 
 	public InvokeWorker( String host, int port, String username, String password, String vhost )
 	{
 		super( host, port, username, password, vhost, Queue.CELERY, Exchange.RESULTS );
 	}
 
-	public InvokeWorker( ConnectionProvider connectionFactory, MessageConsumer consumer )
+	public InvokeWorker( ConnectionProvider connectionFactory, ConsumerProvider consumerProvider )
 	{
-		super( connectionFactory, consumer, Queue.CELERY, Exchange.RESULTS );
+		super( connectionFactory, consumerProvider, Queue.CELERY, Exchange.RESULTS );
 	}
 
 	@Override
 	public void run() throws Exception
 	{
-		createConnectionIfRequired();
-		Channel channel = getChannel();
-
-		if( channel != null )
-		{
-			Consumer rabbitConsumer = getMessageConsumer().initialize( channel );
-			channel.queueDeclare( getQueue(), true, false, false, new HashMap<String, Object>() );
-			channel.basicConsume( getQueue(), true, rabbitConsumer );
-		}
+		initializeConnection();
 		while( isRunning() )
 		{
-			log.debug( getClass().getSimpleName() + "Waiting for tasks" );
-			String message = getMessageConsumer().nextMessage();
+			log.debug( " waiting for tasks" );
 			try
 			{
-				if( message != null )
+				QueueingConsumer.Delivery delivery = getConsumer().nextMessage( 500 );
+				if( delivery != null )
 				{
+					String message = new String( delivery.getBody() );
 					log.debug( "Received message: " + message );
-
 					InvokeJob task = InvokeJob.fromJson( message, this );
-
 					if( onJob != null && task != null )
 					{
 						log.info( "Handling task: " + message );
 						onJob.handle( task ); // This is blocking!
 					}
+					getChannel().basicAck( delivery.getEnvelope().getDeliveryTag(), false );
 				}
 			}
 			catch( NullPointerException e )
 			{
 				log.error( "Message could not be parsed, is it the correct format? Supported formats: [JSON], Non-supported formats: [ Pickle, MessagePack, XML ]", e );
 			}
+			catch( IOException | AlreadyClosedException e )
+			{
+				log.warn( "Lost RabbitMQ connection" );
+			}
 			catch( ShutdownSignalException e )
 			{
-				log.error( "Broker shutdown detected, retrying connection in " + DEFAULT_TIMEOUT / 1000 + " seconds", e );
-
-			}
-			catch( ConsumerCancelledException e )
-			{
-				log.info( "Consumer cancelled", e );
+				log.debug( "Attempting reconnection" );
+				try
+				{
+					waitAndRecover( 2000 );
+				}
+				catch( Exception ex )
+				{
+					log.error( "Attempted recovery failed. Reason: " + ex.getMessage(), ex );
+				}
 			}
 			catch( Exception e )
 			{
 				log.error( "Critical error, unable to inform the caller about failure.", e );
 			}
+		}
+	}
 
+	@Override
+	protected MessageConsumer replaceConsumer( Channel channel ) throws IOException, ShutdownSignalException
+	{
+		return getConsumerProvider().getInvokeConsumer( channel );
+	}
+
+	@Override
+	protected void initializeConnection() throws InterruptedException
+	{
+		while( isRunning() )
+		{
+			try
+			{
+				connect();
+				break;
+			}
+			catch( IOException e )
+			{
+				log.error( "Unable to connect, retrying in 2 seconds" );
+				Thread.sleep( 1000 );
+			}
 		}
 	}
 }

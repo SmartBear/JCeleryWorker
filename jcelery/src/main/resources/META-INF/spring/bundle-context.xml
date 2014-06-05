@@ -29,7 +29,7 @@
         <constructor-arg value="${RABBITMQ_VHOST:/}"/>
     </bean>
 
-    <bean id="connectionProvider" class="org.loadui.jcelery.base.RabbitProvider">
+    <bean id="connectionProvider" class="org.loadui.jcelery.base.RabbitConnectionProvider">
         <constructor-arg ref="mq-host"/>
         <constructor-arg ref="mq-port"/>
         <constructor-arg ref="mq-username"/>
@@ -37,17 +37,16 @@
         <constructor-arg ref="mq-vhost"/>
     </bean>
 
-    <bean id="revokeConsumer" class="org.loadui.jcelery.base.RabbitConsumer"/>
-    <bean id="invokeConsumer" class="org.loadui.jcelery.base.RabbitConsumer"/>
+    <bean id="consumerProvider" class="org.loadui.jcelery.base.RabbitConsumerProvider"/>
 
     <bean id="revokeWorker" class="org.loadui.jcelery.worker.RevokeWorker">
-        <constructor-arg ref="connection"/>
-        <constructor-arg ref="anyRevokeConsumer"/>
+        <constructor-arg ref="connectionProvider"/>
+        <constructor-arg ref="consumerProvider"/>
     </bean>
 
     <bean id="invokeWorker" class="org.loadui.jcelery.worker.InvokeWorker">
-        <constructor-arg ref="connection"/>
-        <constructor-arg ref="anyInvokeConsumer"/>
+        <constructor-arg ref="connectionProvider"/>
+        <constructor-arg ref="consumerProvider"/>
     </bean>
 
     <bean id="jobService" class="org.loadui.jcelery.base.CeleryService">
