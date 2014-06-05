@@ -6,13 +6,11 @@ import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.ShutdownSignalException;
 import org.loadui.jcelery.*;
 import org.loadui.jcelery.base.AbstractWorker;
-import org.loadui.jcelery.base.RabbitConsumer;
 import org.loadui.jcelery.tasks.InvokeJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 public class InvokeWorker extends AbstractWorker
 {
@@ -31,7 +29,7 @@ public class InvokeWorker extends AbstractWorker
 	@Override
 	public void run() throws Exception
 	{
-		initialConnection();
+		initializeConnection();
 		while( isRunning() )
 		{
 			log.debug( " waiting for tasks" );
@@ -85,7 +83,7 @@ public class InvokeWorker extends AbstractWorker
 	}
 
 	@Override
-	protected void initialConnection() throws InterruptedException
+	protected void initializeConnection() throws InterruptedException
 	{
 		while( isRunning() )
 		{

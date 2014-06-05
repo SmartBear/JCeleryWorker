@@ -29,7 +29,7 @@ public class RevokeWorker extends AbstractWorker
 	@Override
 	protected void run() throws Exception
 	{
-		initialConnection();
+		initializeConnection();
 		while( isRunning() )
 		{
 			try
@@ -98,7 +98,7 @@ public class RevokeWorker extends AbstractWorker
 	}
 
 	@Override
-	protected void initialConnection() throws InterruptedException
+	protected void initializeConnection() throws InterruptedException
 	{
 		while( isRunning() )
 		{

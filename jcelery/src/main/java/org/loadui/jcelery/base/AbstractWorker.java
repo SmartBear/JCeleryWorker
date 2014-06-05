@@ -147,7 +147,7 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 
 	protected abstract MessageConsumer replaceConsumer( Channel channel ) throws IOException, ShutdownSignalException;
 
-	protected abstract void initialConnection() throws InterruptedException;
+	protected abstract void initializeConnection() throws InterruptedException;
 
 	public ConsumerProvider getConsumerProvider()
 	{
