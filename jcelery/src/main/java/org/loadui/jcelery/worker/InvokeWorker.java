@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class InvokeWorker extends AbstractWorker
+public class InvokeWorker extends AbstractWorker<InvokeJob>
 {
 	Logger log = LoggerFactory.getLogger( InvokeWorker.class );
 
@@ -21,9 +21,9 @@ public class InvokeWorker extends AbstractWorker
 		super( host, port, username, password, vhost, Queue.CELERY, Exchange.RESULTS );
 	}
 
-	public InvokeWorker( ConnectionProvider connectionFactory, ConsumerProvider consumerProvider )
+	public InvokeWorker( ConnectionProvider connectionProvider, ConsumerProvider consumerProvider )
 	{
-		super( connectionFactory, consumerProvider, Queue.CELERY, Exchange.RESULTS );
+		super( connectionProvider, consumerProvider, Queue.CELERY, Exchange.RESULTS );
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class InvokeWorker extends AbstractWorker
 			log.debug( " waiting for tasks" );
 			try
 			{
-				QueueingConsumer.Delivery delivery = getConsumer().nextMessage( 500 );
+				QueueingConsumer.Delivery delivery = consumer.nextMessage( 500 );
 				if( delivery != null )
 				{
 					String message = new String( delivery.getBody() );
