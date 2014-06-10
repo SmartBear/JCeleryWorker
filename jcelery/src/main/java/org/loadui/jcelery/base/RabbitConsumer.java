@@ -11,7 +11,7 @@ public class RabbitConsumer implements MessageConsumer
 {
 	private QueueingConsumer consumer;
 
-	private Logger log = LoggerFactory.getLogger( MessageConsumer.class );
+	private Logger log = LoggerFactory.getLogger( RabbitConsumer.class );
 
 	public RabbitConsumer( Channel channel )
 	{

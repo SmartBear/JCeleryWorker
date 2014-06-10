@@ -20,11 +20,4 @@ public class RabbitConsumerProvider implements ConsumerProvider
 	{
 		return specificRevoker == null ? new RabbitConsumer( channel ) : specificRevoker;
 	}
-
-	@Override
-	public void replaceMessageConsumer( MessageConsumer anotherInvoker, MessageConsumer anotherRevoker )
-	{
-		this.specificInvoker = anotherInvoker;
-		this.specificRevoker = anotherRevoker;
-	}
 }

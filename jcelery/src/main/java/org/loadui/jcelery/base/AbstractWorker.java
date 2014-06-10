@@ -9,14 +9,14 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.HashMap;
 
-public abstract class AbstractWorker extends AbstractExecutionThreadService
+public abstract class AbstractWorker<T extends Job> extends AbstractExecutionThreadService
 {
-	protected TaskHandler onJob;
+	protected TaskHandler<T> onJob;
 	private Connection connection;
 	private Channel channel;
 	private ConnectionProvider connectionProvider;
    private ConsumerProvider consumerProvider;
-	private MessageConsumer consumer;
+	protected MessageConsumer consumer;
 	private final Queue queue;
 	private final Exchange exchange;
 
@@ -45,7 +45,7 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 		this( new RabbitConnectionProvider( host, port, username, password, vhost ), new RabbitConsumerProvider(), queue, exchange );
 	}
 
-	public void setTaskHandler( TaskHandler<?> handler )
+	public void setTaskHandler( TaskHandler<T> handler )
 	{
 		this.onJob = handler;
 	}
@@ -103,7 +103,7 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 
 		channel.basicRecover( true );
 		channel.queueDeclare( getQueue(), AMQP_DURABLE, AMQP_EXCLUSIVE, AMQP_AUTO_DELETE, new HashMap<String, Object>() );
-		channel.basicConsume( getQueue(), AMQP_AUTO_ACK, getConsumer().getConsumer() );
+		channel.basicConsume( getQueue(), AMQP_AUTO_ACK, consumer.getConsumer() );
 	}
 
 	protected abstract void run() throws Exception;
@@ -118,7 +118,7 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 		return exchange.getExchange();
 	}
 
-	public TaskHandler<?> getTaskHandler()
+	public TaskHandler<T> getTaskHandler()
 	{
 		return onJob;
 	}
@@ -152,10 +152,5 @@ public abstract class AbstractWorker extends AbstractExecutionThreadService
 	public ConsumerProvider getConsumerProvider()
 	{
 		return consumerProvider;
-	}
-
-	public MessageConsumer getConsumer()
-	{
-		return consumer;
 	}
 }

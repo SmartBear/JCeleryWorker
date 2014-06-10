@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class RevokeWorker extends AbstractWorker
+public class RevokeWorker extends AbstractWorker<RevokeJob>
 {
 	Logger log = LoggerFactory.getLogger( RevokeWorker.class );
 
@@ -35,7 +35,7 @@ public class RevokeWorker extends AbstractWorker
 			try
 			{
 				log.debug( " waiting for tasks" );
-				QueueingConsumer.Delivery delivery = getConsumer().nextMessage( 500 );
+				QueueingConsumer.Delivery delivery = consumer.nextMessage( 500 );
 				if( delivery != null )
 				{
 					String message = new String( delivery.getBody() );
