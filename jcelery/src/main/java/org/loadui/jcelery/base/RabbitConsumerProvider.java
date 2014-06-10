@@ -6,18 +6,15 @@ import org.loadui.jcelery.MessageConsumer;
 
 public class RabbitConsumerProvider implements ConsumerProvider
 {
-	private MessageConsumer specificInvoker;
-	private MessageConsumer specificRevoker;
-
 	@Override
 	public MessageConsumer getInvokeConsumer( Channel channel )
 	{
-		return specificInvoker == null ? new RabbitConsumer( channel ) : specificInvoker;
+		return new RabbitConsumer( channel );
 	}
 
 	@Override
 	public MessageConsumer getRevokeConsumer( Channel channel )
 	{
-		return specificRevoker == null ? new RabbitConsumer( channel ) : specificRevoker;
+		return new RabbitConsumer( channel );
 	}
 }
