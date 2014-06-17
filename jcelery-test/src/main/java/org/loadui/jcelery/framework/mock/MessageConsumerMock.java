@@ -1,12 +1,14 @@
-package org.loadui.jcelery;
+package org.loadui.jcelery.framework.mock;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.QueueingConsumer;
+import org.loadui.jcelery.MessageConsumer;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;

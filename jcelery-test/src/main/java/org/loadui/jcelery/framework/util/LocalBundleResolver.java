@@ -1,4 +1,4 @@
-package org.loadui.jcelery;
+package org.loadui.jcelery.framework.util;
 
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.options.UrlProvisionOption;

@@ -1,7 +1,8 @@
-package org.loadui.jcelery;
+package org.loadui.jcelery.framework.mock;
 
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import org.loadui.jcelery.ConnectionProvider;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package org.loadui.jcelery;
+package org.loadui.jcelery.framework.util;
 
 import org.junit.Test;
 import org.ops4j.pax.exam.options.UrlProvisionOption;
@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.loadui.jcelery.LocalBundleResolver.findTargetDirectory;
+import static org.loadui.jcelery.framework.util.LocalBundleResolver.findTargetDirectory;
 
 public class LocalBundleResolverTest
 {

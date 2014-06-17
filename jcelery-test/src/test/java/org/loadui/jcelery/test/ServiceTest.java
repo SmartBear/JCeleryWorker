@@ -1,17 +1,24 @@
-package org.loadui.jcelery;
+package org.loadui.jcelery.test;
 
 import com.rabbitmq.client.Channel;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.loadui.jcelery.ConsumerProvider;
+import org.loadui.jcelery.Job;
+import org.loadui.jcelery.MessageConsumer;
+import org.loadui.jcelery.TaskHandler;
 import org.loadui.jcelery.base.CeleryService;
+import org.loadui.jcelery.framework.mock.MessageConsumerMock;
+import org.loadui.jcelery.framework.mock.MockRabbitProvider;
 import org.loadui.jcelery.tasks.InvokeJob;
 
 import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.loadui.jcelery.framework.mock.CeleryTestUtils.*;
 
 public class ServiceTest
 {
@@ -97,7 +104,7 @@ public class ServiceTest
 			}
 		} );
 
-		invokeConsumer.sendMessage( TestUtils.createStartMessage( "ID123" ) );
+		invokeConsumer.sendMessage( startJob("ID123") );
 
 		Thread.sleep( 1000 );
 
@@ -117,7 +124,7 @@ public class ServiceTest
 			}
 		} );
 
-		invokeConsumer.sendMessage( TestUtils.createStartMessage( "ID123" ) );
+		invokeConsumer.sendMessage( startJob("ID123") );
 
 		Thread.sleep( 1000 );
 

@@ -1,4 +1,4 @@
-package org.loadui.jcelery;
+package org.loadui.jcelery.framework.mock;
 
 import com.rabbitmq.client.*;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package org.loadui.jcelery;
+package org.loadui.jcelery.framework.mock;
 
 public interface CeleryReceiver
 {
