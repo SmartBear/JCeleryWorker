@@ -1,7 +1,6 @@
 package org.loadui.jcelery.framework;
 
 import com.google.common.io.Resources;
-import org.loadui.jcelery.framework.util.action.InvokeOperation;
 
 import java.io.IOException;
 import java.net.URL;
@@ -9,7 +8,7 @@ import java.nio.charset.Charset;
 
 public class MockRabbitInvokeConsumer extends AbstractConsumerMock implements CeleryStarter
 {
-	private final String START_JOB = InvokeOperation.TEST_START.getDefault();
+	private final String START_JOB = "tasks.controller.start";
 
 	@Override
 	public void startJob( String id )
