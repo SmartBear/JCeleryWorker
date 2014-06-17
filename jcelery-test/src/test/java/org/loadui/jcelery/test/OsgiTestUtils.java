@@ -4,8 +4,8 @@ import org.ops4j.pax.exam.Option;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.provision;
 
@@ -39,7 +39,8 @@ public class OsgiTestUtils
 		assertNotNull( context );
 		for( Bundle bundle : context.getBundles() )
 		{
-			assertSame( Bundle.ACTIVE, bundle.getState() );
+
+			assertEquals( bundle.ACTIVE, bundle.getState() );
 		}
 	}
 

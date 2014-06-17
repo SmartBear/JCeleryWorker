@@ -1,7 +1,9 @@
-package org.loadui.jcelery;
+package org.loadui.jcelery.test;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.loadui.jcelery.ConnectionProvider;
+import org.loadui.jcelery.JobService;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -13,8 +15,8 @@ import javax.inject.Inject;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static org.loadui.jcelery.LocalBundleResolver.jCeleryCore;
-import static org.loadui.jcelery.LocalBundleResolver.jobsApi;
+import static org.loadui.jcelery.framework.util.LocalBundleResolver.jCeleryCore;
+import static org.loadui.jcelery.framework.util.LocalBundleResolver.jobsApi;
 import static org.loadui.jcelery.test.OsgiTestUtils.assertAllBundlesActive;
 import static org.loadui.jcelery.test.OsgiTestUtils.springDmBundles;
 import static org.ops4j.pax.exam.CoreOptions.*;
@@ -27,10 +29,10 @@ public class JobServiceTest
 	BundleContext context;
 
 	@Inject
-	JobService celeryService;
+    JobService celeryService;
 
 	@Inject
-	ConnectionProvider connectionProvider;
+    ConnectionProvider connectionProvider;
 
 	@Configuration
 	public Option[] config()
