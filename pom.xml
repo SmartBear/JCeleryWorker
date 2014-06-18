@@ -23,6 +23,7 @@
         <osgiVersion>4.3.0</osgiVersion>
         <paxExamVersion>3.4.0</paxExamVersion>
         <slf4jVersion>1.6.1</slf4jVersion>
+        <rabbitVersion>3.3.1</rabbitVersion>
     </properties>
 
     <build>
@@ -60,7 +61,7 @@
             <dependency>
                 <groupId>com.rabbitmq</groupId>
                 <artifactId>amqp-client</artifactId>
-                <version>3.3.1</version>
+                <version>${rabbitVersion}</version>
             </dependency>
             <dependency>
                 <groupId>com.googlecode.json-simple</groupId>

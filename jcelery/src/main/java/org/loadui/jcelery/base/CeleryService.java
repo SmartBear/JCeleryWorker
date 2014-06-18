@@ -15,8 +15,8 @@ public class CeleryService implements JobService
 
 	private List<AbstractWorker> workers;
 
-	private AbstractWorker revokeWorker;
-	private AbstractWorker invokeWorker;
+	protected AbstractWorker revokeWorker;
+	protected AbstractWorker invokeWorker;
 
 
 	public CeleryService( InvokeWorker invoker, RevokeWorker revoker )
@@ -31,6 +31,11 @@ public class CeleryService implements JobService
 	public CeleryService( String host, int port, String username, String password, String vhost )
 	{
 		this( new InvokeWorker( host, port, username, password, vhost ), new RevokeWorker( host, port, username, password, vhost ) );
+	}
+
+	public CeleryService( ConnectionProvider connectionProvider, ConsumerProvider consumerProvider )
+	{
+		this( new InvokeWorker( connectionProvider, consumerProvider ), new RevokeWorker( connectionProvider, consumerProvider ) );
 	}
 
 	@Override
@@ -68,8 +73,10 @@ public class CeleryService implements JobService
 	@Override
 	public boolean isServiceRunning()
 	{
-		for( AbstractWorker worker : workers ){
-			if ( !worker.isRunning() ){
+		for( AbstractWorker worker : workers )
+		{
+			if( !worker.isRunning() )
+			{
 				return false;
 			}
 		}
