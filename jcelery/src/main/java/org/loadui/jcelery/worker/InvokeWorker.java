@@ -35,7 +35,7 @@ public class InvokeWorker extends AbstractWorker<InvokeJob>
 			log.debug( " waiting for tasks" );
 			try
 			{
-				QueueingConsumer.Delivery delivery = consumer.nextMessage( 500 );
+				QueueingConsumer.Delivery delivery = consumer.nextMessage( POLLING_TIMEOUT );
 				if( delivery != null )
 				{
 					String message = new String( delivery.getBody() );
@@ -44,7 +44,9 @@ public class InvokeWorker extends AbstractWorker<InvokeJob>
 					if( onJob != null && task != null )
 					{
 						log.info( "Handling task: " + message );
+						task.start();
 						onJob.handle( task ); // This is blocking!
+						waitUntilJobCompleted( task );
 					}
 					getChannel().basicAck( delivery.getEnvelope().getDeliveryTag(), false );
 				}
@@ -75,6 +77,8 @@ public class InvokeWorker extends AbstractWorker<InvokeJob>
 			}
 		}
 	}
+
+
 
 	@Override
 	protected MessageConsumer replaceConsumer( Channel channel ) throws IOException, ShutdownSignalException

@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Mockito.mock;
 
-public abstract class AbstractConsumerMock implements MessageConsumer, MessageProducer
+public abstract class AbstractConsumerMock implements MessageConsumer, MessageControl
 {
 	private final LinkedBlockingQueue<QueueingConsumer.Delivery> messages;
 
@@ -51,6 +51,21 @@ public abstract class AbstractConsumerMock implements MessageConsumer, MessagePr
 		{
 			throw new RuntimeException( "Unable to send message: " + message, e );
 		}
+	}
+
+	@Override
+	public int sizeOfQueue(){
+		return messages.size();
+	}
+
+	@Override
+	public boolean isQueueEmpty(){
+		return messages.isEmpty();
+	}
+
+	@Override
+	public void clearQueue(){
+		messages.clear();
 	}
 
 	@Override

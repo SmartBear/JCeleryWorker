@@ -8,9 +8,16 @@ import java.util.List;
  */
 public interface Job
 {
-	void complete( Status status, Object response ) throws IOException;
+	void complete();
+	void complete( Object message );
 
-	void complete( Status status ) throws IOException;
+	void revoke();
+
+	void start();
+
+	void fail( String reason );
+
+	boolean isInProgress();
 
 	String getId();
 

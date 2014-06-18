@@ -8,6 +8,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.loadui.jcelery.Job;
 import org.loadui.jcelery.base.AbstractWorker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,8 +18,10 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class InvokeJob implements Job
+public class InvokeJob extends AbstractJob
 {
+
+
 	private final String task;
 	private final String id;
 	private final List<Object> args;
@@ -64,7 +68,7 @@ public class InvokeJob implements Job
 	}
 
 	@Override
-	public void complete( Status status, Object result ) throws IOException
+	protected void respond( Status status, Object result )
 	{
 		JSONObject obj = new JSONObject();
 
@@ -78,8 +82,8 @@ public class InvokeJob implements Job
 	}
 
 	@Override
-	public void complete( Status status ) throws IOException{
-		complete( status, "" );
+	protected void respond( Status status ){
+		respond( status, "" );
 	}
 
 	@Override
