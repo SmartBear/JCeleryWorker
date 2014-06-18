@@ -35,7 +35,7 @@ public class RevokeWorker extends AbstractWorker<RevokeJob>
 			try
 			{
 				log.debug( " waiting for tasks" );
-				QueueingConsumer.Delivery delivery = consumer.nextMessage( 500 );
+				QueueingConsumer.Delivery delivery = consumer.nextMessage( POLLING_TIMEOUT );
 				if( delivery != null )
 				{
 					String message = new String( delivery.getBody() );
@@ -46,7 +46,9 @@ public class RevokeWorker extends AbstractWorker<RevokeJob>
 						if( onJob != null )
 						{
 							log.info( "Handling task: " + message );
-							onJob.handle( task ); // This is blocking!
+							task.start();
+							onJob.handle( task ); // This is blocking.
+							waitUntilJobCompleted( task );
 						}
 					}
 					else if( message.contains( "\"method\": \"enable_events\"" ) )

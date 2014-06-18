@@ -1,5 +1,6 @@
 package org.loadui.jcelery.base;
 
+import com.google.common.base.Predicate;
 import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import com.rabbitmq.client.*;
 import org.loadui.jcelery.*;
@@ -8,6 +9,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+
+import static org.loadui.jcelery.utils.JobUtils.waitUntil;
 
 public abstract class AbstractWorker<T extends Job> extends AbstractExecutionThreadService
 {
@@ -15,13 +20,14 @@ public abstract class AbstractWorker<T extends Job> extends AbstractExecutionThr
 	private Connection connection;
 	private Channel channel;
 	private ConnectionProvider connectionProvider;
-   private ConsumerProvider consumerProvider;
+	private ConsumerProvider consumerProvider;
 	protected MessageConsumer consumer;
 	private final Queue queue;
 	private final Exchange exchange;
 
 	private Logger log = LoggerFactory.getLogger( this.getClass() );
 
+	protected static final int POLLING_TIMEOUT = 500;
 	protected static final boolean AMQP_INITIATED_BY_APPLICATION = true;
 	protected static final boolean AMQP_HARD_ERROR = true;
 	protected static final boolean AMQP_REQUEUE = true;
@@ -74,14 +80,22 @@ public abstract class AbstractWorker<T extends Job> extends AbstractExecutionThr
 		return this;
 	}
 
-	public void respond( String id, String response ) throws IOException
+	public void respond( String id, String response )
 	{
+
 		log.debug( getClass().getSimpleName() + ": Trying to respond " + response + " for job " + id );
 		String rabbitId = id.replaceAll( "-", "" );
 
 		AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder().contentType( "application/json" ).build();
-		channel.exchangeDeclare( getExchange(), "direct", false, false, null );
-		channel.basicPublish( getExchange(), rabbitId, properties, response.getBytes() );
+		try
+		{
+			channel.exchangeDeclare( getExchange(), "direct", false, false, null );
+			channel.basicPublish( getExchange(), rabbitId, properties, response.getBytes() );
+		}
+		catch( IOException e )
+		{
+		 	log.error( "Unable to respond a celery message", e );
+		}
 	}
 
 
@@ -99,7 +113,7 @@ public abstract class AbstractWorker<T extends Job> extends AbstractExecutionThr
 		}
 
 		channel = connection.createChannel();
-      consumer = replaceConsumer( channel );
+		consumer = replaceConsumer( channel );
 
 		channel.basicRecover( true );
 		channel.queueDeclare( getQueue(), AMQP_DURABLE, AMQP_EXCLUSIVE, AMQP_AUTO_DELETE, new HashMap<String, Object>() );
@@ -143,6 +157,29 @@ public abstract class AbstractWorker<T extends Job> extends AbstractExecutionThr
 		Thread.sleep( timeout );
 		log.debug( "Attempting connection recovery" );
 		connect();
+	}
+
+	protected void waitUntilJobCompleted( final Job job )
+	{
+		try
+		{
+			waitUntil( "Wait for the job to complete or fail", new Callable<Boolean>()
+			{
+				@Override
+				public Boolean call() throws Exception
+				{
+					return !job.isInProgress();
+				}
+			}, 180, TimeUnit.SECONDS );
+		}
+		catch( InterruptedException e )
+		{
+			log.error( "Interrupted while waiting for job to start." );
+		}
+		if( job.isInProgress() )
+		{
+			job.revoke();
+		}
 	}
 
 	protected abstract MessageConsumer replaceConsumer( Channel channel ) throws IOException, ShutdownSignalException;

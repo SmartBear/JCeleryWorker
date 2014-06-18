@@ -23,7 +23,7 @@ public class DemoApp
 				switch( t.getMethod() )
 				{
 					case "tasks.add":
-						t.complete( Job.Status.SUCCESS, add( t ) );
+						t.complete( add( t ) );
 				}
 			}
 		} );
@@ -36,7 +36,7 @@ public class DemoApp
 				switch( t.getMethod() )
 				{
 					case "revoke":
-						t.complete( Job.Status.REVOKED, "" );
+						t.revoke();
 				}
 			}
 		} );

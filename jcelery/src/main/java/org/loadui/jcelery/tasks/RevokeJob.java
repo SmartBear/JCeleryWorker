@@ -13,7 +13,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class RevokeJob implements Job
+public class RevokeJob extends AbstractJob
 {
 	private final String method;
 	private final String signal;
@@ -55,7 +55,7 @@ public class RevokeJob implements Job
 	}
 
 	@Override
-	public void complete( Job.Status status, Object result ) throws IOException
+	protected void respond( Job.Status status, Object result )
 	{
 		JSONObject obj = new JSONObject();
 
@@ -69,12 +69,12 @@ public class RevokeJob implements Job
 	}
 
 	@Override
-	public void complete( Status status ) throws IOException
+	protected void respond( Status status )
 	{
-		complete( status, "" );
+		respond( status, "" );
 	}
 
-	@Override
+   @Override
 	public String getId()
 	{
 		return task_id;
