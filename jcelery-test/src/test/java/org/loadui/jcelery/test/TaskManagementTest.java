@@ -98,10 +98,7 @@ public class TaskManagementTest
 	public void shouldHandleBasicTask() throws InterruptedException
 	{
 		invoker.sendMessage( startJob( "JOB" ) );
-
-		waitFor( 1000 );
-
-		assertThat( "The message should be handled", currentJob.isInProgress(), is( true ) );
+		waitForTestToStart();
 	}
 
 	@Test
@@ -149,9 +146,5 @@ public class TaskManagementTest
 				return celeryService.isServiceRunning();
 			}
 		}, 10, TimeUnit.SECONDS );
-	}
-
-	private void waitFor( int ms ) throws InterruptedException{
-		Thread.sleep( ms );
 	}
 }
